@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \":*)",
+      "Bash(Get-ChildItem D:Neo-nav -Recurse -File)",
+      "Bash(Select-Object FullName, Length)",
+      "Bash(Sort-Object FullName)",
+      "Bash(cmd /c \"dir /s /b D:\\\\Neo-nav\"\")",
+      "Bash(cmd /c dir /s /b D:Neo-nav)",
+      "Bash(cmd /c \"findstr /n \"\"page-afterschool\\\\|page-neo\\\\|page-overview\\\\|page-teacher\\\\|page-specialed\\\\|initAfterSchool\\\\|initNeo\\\\|initOverview\\\\|PICKUP_RULES\\\\|submitAfterSchool\\\\|submitNeo\\\\|submitSpecialed\\\\|buildWeekRow\\\\|buildParentSummary\"\" D:\\\\Neo-nav\\\\web\\\\index.html | head -60\")",
+      "Bash(cmd /c \"find /c /v \"\" D:\\\\Neo-nav\\\\web\\\\index.html\")"
+    ]
+  }
+}

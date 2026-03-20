@@ -1,0 +1,401 @@
+以下是您所需的Neo-nav四种风格版本的HTML设计稿。每个版本均包含登录、角色选择、家长页、导师页（快速/简填双模式）、安亲班页、总览页、Neo笔记，并支持白天/暗色主题切换。设计以手机优先，零治疗语言，便于家长与孩子直观理解使用情境。
+```html
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Neo-nav · 四款風格設計稿 | 河堤國小 3年2班 3號</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #eef2f5;
+            padding: 24px 16px 48px;
+        }
+
+        /* 版本切換標籤 */
+        .version-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .tab-btn {
+            background: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #1e2a3e;
+        }
+
+        .tab-btn.active {
+            background: #1f4f6e;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 每個版本的大容器 */
+        .version-container {
+            display: none;
+            margin-bottom: 40px;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+
+        .version-container.active-version {
+            display: block;
+        }
+
+        /* 主題切換按鈕區 */
+        .theme-switch-area {
+            display: flex;
+            justify-content: flex-end;
+            padding: 12px 20px;
+            background: inherit;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .theme-btn {
+            background: rgba(128,128,128,0.15);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 10px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* 白天/暗色 主題變數 (動態切換) */
+        .light-theme {
+            --bg-page: #ffffff;
+            --surface: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --card-bg: #ffffff;
+            --border: #e9eef3;
+            --accent: #2c7da0;
+            --accent-soft: #e6f4f5;
+            --badge-bg: #f1f5f9;
+        }
+
+        .dark-theme {
+            --bg-page: #121826;
+            --surface: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e6;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --accent: #5fa9cf;
+            --accent-soft: #1f2e3f;
+            --badge-bg: #0f172a;
+        }
+
+        /* 各版本專屬樣式會覆蓋部分變數，基本樣式通用 */
+        .demo-zone {
+            background: var(--bg-page, #fff);
+            color: var(--text-primary, #1e293b);
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .demo-inner {
+            padding: 20px 20px 32px;
+        }
+
+        /* 手機模擬卡片 */
+        .mockup-phone {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .screen-card {
+            background: var(--card-bg, white);
+            border-radius: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 1px solid var(--border, #edf2f7);
+            overflow: hidden;
+        }
+
+        .screen-header {
+            padding: 16px 20px 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            color: var(--accent, #2c7da0);
+            border-bottom: 1px solid var(--border, #eef2f8);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .screen-body {
+            padding: 20px;
+        }
+
+        /* 表單元素共用 */
+        .form-row {
+            margin-bottom: 16px;
+        }
+        label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+        select, input, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+        }
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .chip-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .chip {
+            background: var(--badge-bg);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+        }
+        .quick-mode, .blank-mode {
+            background: var(--accent-soft);
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        .big-time-btn {
+            background: var(--accent);
+            color: white;
+            text-align: center;
+            padding: 18px;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            margin: 12px 0;
+        }
+        .neo-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .time-block {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .time-label {
+            font-weight: 700;
+            min-width: 65px;
+            font-size: 0.8rem;
+        }
+        .sign-line {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            border-top: 1px dashed var(--border);
+            padding-top: 12px;
+            font-size: 0.7rem;
+        }
+
+        /* 版本A/B/C/D 特殊裝飾 */
+        .ver-a .accent { --accent: #2c7da0; }
+        .ver-b .screen-card { border-radius: 28px; box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+        .ver-c .screen-header { font-weight: 700; text-transform: uppercase; }
+        .ver-d .btn-primary { background: #f4b942; color: #2d2a1e; }
+
+        /* 導師頁雙模式示範 */
+        .mode-tag {
+            font-size: 0.7rem;
+            background: var(--accent-soft);
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+        hr { margin: 12px 0; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center;}
+        .interest-star { font-size: 1.2rem; letter-spacing: 4px; }
+    </style>
+</head>
+<body>
+<div class="version-tabs">
+    <button class="tab-btn active" data-ver="verA">✨ 極簡溫柔版 A</button>
+    <button class="tab-btn" data-ver="verB">🎨 卡片活潑版 B</button>
+    <button class="tab-btn" data-ver="verC">📋 老師友善專業版 C</button>
+    <button class="tab-btn" data-ver="verD">🎮 Neo遊戲化版 D</button>
+</div>
+
+<!-- 版本 A : 極簡溫柔版 -->
+<div id="verA" class="version-container active-version ver-a">
+    <div class="demo-zone light-theme" id="themeZoneA">
+        <div class="theme-switch-area">
+            <button class="theme-btn" data-theme="light" data-zone="A">☀️ 白天</button>
+            <button class="theme-btn" data-theme="dark" data-zone="A">🌙 暗夜</button>
+        </div>
+        <div class="demo-inner">
+            <div class="mockup-phone">
+                <!-- Login -->
+                <div class="screen-card"><div class="screen-header">🔐 登入</div><div class="screen-body"><input type="password" placeholder="班級密碼" value="河堤352"><button class="btn-primary" style="margin-top:12px">進入 Neo-nav</button><p style="font-size:0.7rem;margin-top:8px;">河堤國小 3年2班 3號 專屬</p></div></div>
+                <!-- Role Selector -->
+                <div class="screen-card"><div class="screen-header">👥 我是誰？</div><div class="screen-body"><div class="chip-group"><span class="chip">👩‍👦 家長</span><span class="chip">🏫 導師</span><span class="chip">🎓 特教</span><span class="chip">📚 安親班</span><span class="chip">👦 Neo</span><span class="chip">📊 總覽</span></div></div></div>
+                <!-- 家長頁 -->
+                <div class="screen-card"><div class="screen-header">🏡 家長晨間交班</div><div class="screen-body"><div class="form-row"><label>填報人</label><select><option>媽媽</option><option>爸爸</option><option>阿嬤</option></select></div><div class="form-row"><label>今日狀態</label><div class="chip-group"><span class="chip">🟢 穩</span><span class="chip">🟡 普通</span><span class="chip">🔴 波動</span></div></div><div class="form-row"><label>今日服藥</label><div class="chip-group"><span class="chip">✅ 有</span><span class="chip">❌ 無</span></div></div><div class="form-row"><label>出門前調節</label><div class="chip-group"><span class="chip">✅ 有做</span><span class="chip">❌ 沒做</span></div></div><div class="form-row"><label>今日提醒一句</label><textarea rows="1" placeholder="例：今天體育課要帶水壺"></textarea></div><button class="btn-primary">送出交班</button></div></div>
+                <!-- 導師頁 快速+空白模式 -->
+                <div class="screen-card"><div class="screen-header">🏫 導師日誌</div><div class="screen-body"><div class="quick-mode"><div class="mode-tag">⚡ 快速勾選模式</div><div class="form-row"><label>任務進入</label><div class="chip-group"><span class="chip">🟢 順利</span><span class="chip">🟡 需提醒</span><span class="chip">🔴 困難</span></div></div><div class="form-row"><label>是否需要提醒</label><div class="chip-group"><span class="chip">✔️ 少提醒</span><span class="chip">⚠️ 需多次提醒</span></div></div><div class="form-row"><label>頻繁如廁</label><div class="chip-group"><span class="chip">無</span><span class="chip">有</span></div></div><div class="form-row"><label>興趣度</label><div class="interest-star">😍 😶 😑</div></div><div class="form-row"><label>備註一句</label><input placeholder="今天喜歡自然課"></div></div><hr><div class="blank-mode"><div class="mode-tag">📝 空白簡填模式</div><textarea rows="2" placeholder="老師自由回饋：今天上課專心表現不錯，鼓勵持續。"></textarea><div class="flex-between" style="margin-top:8px"><span>✍️ 簽名：林老師</span><span>課後回饋 ✓</span></div></div><button class="btn-primary" style="margin-top:12px">儲存觀察</button></div></div>
+                <!-- 安親班頁 大按鈕 -->
+                <div class="screen-card"><div class="screen-header">📚 安親班 (彩鳳老師)</div><div class="screen-body"><div class="big-time-btn">🚗 可接時間：現在可接</div><div class="chip-group"><span class="chip">30分後</span><span class="chip">1小時後</span><span class="chip">未完成</span></div><div class="form-row"><label>作業完成度</label><div class="chip-group"><span class="chip">全部</span><span class="chip">大部分</span><span class="chip">一半</span></div></div><div class="form-row"><label>今天專心觀察</label><div class="chip-group"><span class="chip">⭐️ 很好</span><span class="chip">⭐️⭐️ 普通</span><span class="chip">⭐️⭐️⭐️ 需提醒</span></div></div><button class="btn-primary">回報接送</button></div></div>
+                <!-- Overview 頁 -->
+                <div class="screen-card"><div class="screen-header">📊 本週總覽</div><div class="screen-body"><div>📅 3/17-3/23 近一週記錄</div><div class="chip-group" style="margin:12px 0"><span class="chip">🟢 穩 3天</span><span class="chip">🟡 普通 2天</span><span class="chip">🔴 波動 1天</span></div><div>服藥日專注度: 😍😍😐<br>未服藥日: 😐😑😐</div><div>✨ Neo自填 vs 家長版對照: 差異顯示覺察進步中</div><div style="margin-top:12px; background:var(--accent-soft); border-radius:16px; padding:12px;">📈 本週專心趨勢上升 20%</div></div></div>
+                <!-- Neo 每日導航筆記 (紙本感網頁) -->
+                <div class="screen-card"><div class="screen-header">🌟 Neo 每日導航筆記</div><div class="screen-body"><div class="neo-timeline"><div class="time-block"><div class="time-label">🌅 上午區</div><div>國語課專心⭐️⭐️⭐️，舉手一次</div></div><div class="time-block"><div class="time-label">☀️ 下午區</div><div>體育課推牆練習，有喝水</div></div><div class="time-block"><div class="time-label">🏠 放學後區</div><div>安親班作業完成大部分</div></div><div class="time-block"><div class="time-label">🌙 晚上區</div><div>跟媽媽分享今天最難的事：專心寫生字</div></div><div class="time-block"><div class="time-label">🛠️ 今日工具</div><div>深壓背心、跳繩、計時器</div></div><div class="sign-line"><span>👩‍🏫 老師簽名：________</span><span>👨‍👩‍👧 家長簽名：________</span></div></div></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 版本 B : 卡片活潑版 (結構類似但視覺差異大，用自定義class樣式) -->
+<div id="verB" class="version-container ver-b">
+    <div class="demo-zone light-theme" id="themeZoneB">
+        <div class="theme-switch-area"><button class="theme-btn" data-theme="light" data-zone="B">☀️ 白天</button><button class="theme-btn" data-theme="dark" data-zone="B">🌙 暗夜</button></div>
+        <div class="demo-inner" style="background: #fef7e8;">
+            <div class="mockup-phone">
+                <div class="screen-card" style="background:#fff6e5;"><div class="screen-header">🎉 登入 Neo 小幫手</div><div class="screen-body"><input placeholder="輸入密碼 352"><button class="btn-primary" style="background:#f9b43a;">🚀 進入星球</button></div></div>
+                <div class="screen-card"><div class="screen-header">🧸 今天誰來簽到？</div><div class="screen-body"><div class="chip-group"><span class="chip">👩‍👧 爸媽</span><span class="chip">🍎 導師</span><span class="chip">⭐ 特教</span><span class="chip">🏡 安親班</span><span class="chip">👦 Neo</span></div></div></div>
+                <div class="screen-card"><div class="screen-header">❤️ 家長早安交班</div><div class="screen-body"><div class="form-row"><label>📝 填報人</label><select><option>媽媽</option><option>爸爸</option></select></div><div class="form-row"><label>🌈 狀態</label><div class="chip-group"><span class="chip">😊 穩</span><span class="chip">😐 普通</span><span class="chip">😢 波動</span></div></div><div class="form-row"><label>💊 服藥</label><div class="chip-group"><span class="chip">✔️ 有</span><span class="chip">❌ 無</span></div></div><div class="form-row"><label>🤸 調節</label><div class="chip-group"><span class="chip">推牆</span><span class="chip">深壓</span></div></div><div class="form-row"><label>💬 提醒一句</label><input placeholder="今天要記得帶水壺"></div><button class="btn-primary">📨 送出給老師</button></div></div>
+                <div class="screen-card"><div class="screen-header">🍎 導師小幫手</div><div class="screen-body"><div class="quick-mode" style="background:#fffaec;"><div class="mode-tag">⚡ 30秒快選</div><div>任務進入: 😃順利 / 😐普通 / 😣困難</div><div>興趣度: 😍高 / 😐普通 / 😑低</div><div>如廁: 🚽 正常 / 頻繁</div><div>備註: <input placeholder="體育課很專心"></div></div><div class="blank-mode"><div class="mode-tag">✏️ 簡短回饋</div><textarea>今天寫字進步，持續鼓勵</textarea><div>簽章：陳老師</div></div><button class="btn-primary">👍 儲存</button></div></div>
+                <div class="screen-card"><div class="screen-header">🚌 安親班接送快報</div><div class="screen-body"><div class="big-time-btn" style="background:#f2b84e;">⏰ 可接時間：現在可接</div><div class="chip-group"><span class="chip">30分後</span><span class="chip">1小時後</span><span class="chip">作業未完成</span></div><div class="form-row"><label>作業完成</label><div class="chip-group"><span class="chip">✅ 全部</span><span class="chip">📖 大部分</span></div></div><div class="form-row"><label>與同學比較</label><div class="chip-group"><span class="chip">🐇 比較快</span><span class="chip">🐢 差不多</span></div></div></div></div>
+                <div class="screen-card"><div class="screen-header">📈 每週活力圖表</div><div class="screen-body"><div>🎯 專心日誌: 本週4天👍 需要加油2天</div><div>😍 興趣度與完成度對照: 有興趣的科目完成率85%</div><div>🏅 家長 Neo 對照: 覺察星星上升</div><div class="chip-group"><span class="chip">服藥日專注⭐️⭐️⭐️⭐️</span><span class="chip">未服藥⭐️⭐️</span></div></div></div>
+                <div class="screen-card"><div class="screen-header">📓 Neo 任務手帳</div><div class="screen-body"><div>🌞 上午：專心圖卡✔️ 喝水✔️</div><div>🌤️ 下午：運動調節✔️</div><div>🌙 晚上：睡前分享，勾選今天最開心的事: 跟同學玩</div><div>🛠️ 我的工具箱：計時器、重力毯</div><div class="sign-line">老師簽名：______  家長簽名：______</div></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 版本 C : 老師友善專業版 -->
+<div id="verC" class="version-container ver-c">
+    <div class="demo-zone light-theme" id="themeZoneC">
+        <div class="theme-switch-area"><button class="theme-btn" data-theme="light" data-zone="C">☀️ 白天</button><button class="theme-btn" data-theme="dark" data-zone="C">🌙 暗夜</button></div>
+        <div class="demo-inner" style="background:#f5f7fb;">
+            <div class="mockup-phone">
+                <div class="screen-card"><div class="screen-header">🔐 教職員入口</div><div class="screen-body"><input placeholder="學校代碼"><button class="btn-primary">登入</button></div></div>
+                <div class="screen-card"><div class="screen-header">職務選擇</div><div class="screen-body"><div class="chip-group"><span class="chip">導師</span><span class="chip">資源班</span><span class="chip">安親行政</span><span class="chip">家長端</span></div></div></div>
+                <div class="screen-card"><div class="screen-header">家長交班摘要</div><div class="screen-body"><div>📌 填報人: 媽媽</div><div>狀態: 🟡 普通 | 服藥: ✅ | 調節: 深壓</div><div>提醒: 今天需要多鼓勵</div><button class="btn-primary">我已知悉</button></div></div>
+                <div class="screen-card"><div class="screen-header">📋 導師日常紀錄</div><div class="screen-body"><div class="quick-mode"><div class="mode-tag">快速勾選</div><div class="form-row"><label>學習任務進入</label><select><option>順利</option><option>需提醒</option></select></div><div>📢 提醒次數: 🔹少 🔸中 🔺多</div><div>🚻 如廁頻率: 普通/較多</div><div>💡 觀察專注: ⭐️⭐️⭐️⭐️ 良好</div></div><div class="blank-mode"><textarea placeholder="自由記錄，例：國語課主動舉手"></textarea><div>簽章：導師</div></div><button class="btn-primary">完成交班</button></div></div>
+                <div class="screen-card"><div class="screen-header">🏫 安親班對接</div><div class="screen-body"><div class="big-time-btn" style="background:#2c5f8a;">📞 可接時間：現在可接</div><div>作業完成度: 90%</div><div>同儕比較: 速度中等</div><div>備註: 寫作業專心進步</div></div></div>
+                <div class="screen-card"><div class="screen-header">📊 支援摘要</div><div class="screen-body">本週專注趨勢平穩，服藥日與興趣度正相關，建議安親班多提供視覺提示。OT任務執行率80%</div></div>
+                <div class="screen-card"><div class="screen-header">📌 Neo 課後筆記</div><div class="screen-body">上午: 完成國語習作 / 下午: 大肌肉活動 / 放學後: 完成一半作業 / 晚上: 親子共讀。今日有效工具: 計時器。</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 版本 D : Neo遊戲化版 -->
+<div id="verD" class="version-container ver-d">
+    <div class="demo-zone light-theme" id="themeZoneD">
+        <div class="theme-switch-area"><button class="theme-btn" data-theme="light" data-zone="D">☀️ 白天</button><button class="theme-btn" data-theme="dark" data-zone="D">🌙 暗夜</button></div>
+        <div class="demo-inner" style="background:#fcf6e7;">
+            <div class="mockup-phone">
+                <div class="screen-card" style="border:3px solid #ffcd94;"><div class="screen-header">🎮 Neo 冒險登入</div><div class="screen-body"><input placeholder="輸入通關密碼"><button class="btn-primary" style="background:#ffaa33;">✨ 開始任務 ✨</button></div></div>
+                <div class="screen-card"><div class="screen-header">⭐ 選擇你的夥伴</div><div class="screen-body"><div class="chip-group"><span class="chip">👨‍👩‍👧 爸媽夥伴</span><span class="chip">📖 老師夥伴</span><span class="chip">🏆 安親隊長</span><span class="chip">🧙 Neo 本人</span></div></div></div>
+                <div class="screen-card"><div class="screen-header">🏠 爸媽日誌 (晨間寶箱)</div><div class="screen-body"><div>📛 填報人: 爸爸</div><div>🎲 今日能量: 🔋滿格 / 普通 / 需要充電</div><div>💊 小藥丸: ✅ 吃了 / ❌ 沒吃</div><div>🤸 熱身動作: 推牆/深壓/跳跳</div><div>💌 給Neo的一句話: 今天要當專心勇者！</div><button class="btn-primary">發送能量</button></div></div>
+                <div class="screen-card"><div class="screen-header">🍎 導師勇者紀錄</div><div class="screen-body"><div class="quick-mode">⚡ 快選: 任務闖關 🟢順利 / 🟡卡住 / 🔴 魔王關<br>專心徽章: 🏅🏅🏅 / 提醒次數: 3次<br>興趣度: 😍高 😶普通 😑低<br>老師備註: 國語課專注提升</div><div class="blank-mode">📝 自由冒險日記: _____________</div><button class="btn-primary">獲得經驗值</button></div></div>
+                <div class="screen-card"><div class="screen-header">🚌 安親班接送快報</div><div class="screen-body"><div class="big-time-btn" style="background:#e6a017;">⏰ 可接時間：現在就來接我！</div><div>🏆 作業進度: 💯全壘打 / 🧩大部分 / 🕰️一半</div><div>🏃 速度競賽: 比同學快 🐇 / 差不多 🐢</div></div></div>
+                <div class="screen-card"><div class="screen-header">📊 勇者週報</div><div class="screen-body"><div>本週專心之星 🌟🌟🌟🌟</div><div>服藥日專注達成率 85% / 未服藥 60%</div><div>興趣度 vs 完成度: 高興趣任務完成 95%</div><div>Neo自填VS爸媽版: 覺察得分進步 +2</div></div></div>
+                <div class="screen-card"><div class="screen-header">📒 Neo 冒險筆記 (我的任務卡)</div><div class="screen-body"><div class="neo-timeline"><div>🌞 上午任務: 喝水到線✔️ 吃藥✔️</div><div>🌤️ 下午特訓: 推牆10下✔️</div><div>🏡 放學後: 作業大魔王 過關一半</div><div>🌙 晚上回顧: 今天最難是「專心寫字」，我有努力！</div><div>🛠️ 我的神奇道具: 跳繩、重力背心、定時器</div><div class="sign-line">🏅 老師簽章: _____  🏅 家長簽章: _____</div></div></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 版本切換
+    const tabs = document.querySelectorAll('.tab-btn');
+    const containers = {
+        verA: document.getElementById('verA'),
+        verB: document.getElementById('verB'),
+        verC: document.getElementById('verC'),
+        verD: document.getElementById('verD')
+    };
+    tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const ver = btn.getAttribute('data-ver');
+            Object.keys(containers).forEach(v => containers[v].classList.remove('active-version'));
+            containers[ver].classList.add('active-version');
+            tabs.forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    // 主題切換 (白天/暗色)
+    function setupThemeButtons(zoneId) {
+        const zoneDiv = document.getElementById(zoneId);
+        if(!zoneDiv) return;
+        const lightBtn = zoneDiv.querySelector('[data-theme="light"]');
+        const darkBtn = zoneDiv.querySelector('[data-theme="dark"]');
+        if(lightBtn && darkBtn) {
+            const applyTheme = (theme) => {
+                if(theme === 'dark') {
+                    zoneDiv.classList.remove('light-theme');
+                    zoneDiv.classList.add('dark-theme');
+                } else {
+                    zoneDiv.classList.remove('dark-theme');
+                    zoneDiv.classList.add('light-theme');
+                }
+            };
+            lightBtn.addEventListener('click', () => applyTheme('light'));
+            darkBtn.addEventListener('click', () => applyTheme('dark'));
+        }
+    }
+    setupThemeButtons('themeZoneA');
+    setupThemeButtons('themeZoneB');
+    setupThemeButtons('themeZoneC');
+    setupThemeButtons('themeZoneD');
+
+    // 初始確保主題正確
+    document.querySelectorAll('.demo-zone').forEach(zone => zone.classList.add('light-theme'));
+</script>
+
+<style>
+    /* 補充黑暗主題變數覆蓋 */
+    .dark-theme .screen-card, .dark-theme .mockup-phone .screen-card { background: var(--card-bg); border-color: #334155; }
+    .dark-theme .chip { background: #1f2a3e; color: #e2e8f0; }
+    .dark-theme .quick-mode, .dark-theme .blank-mode { background: #0f172a; }
+    .version-container .demo-zone { transition: background 0.2s; border-radius: 32px; }
+    .big-time-btn { cursor: default; text-align: center; font-weight: 800; }
+    @media (max-width: 500px) { .mockup-phone { max-width: 100%; } .screen-body { padding: 16px; } }
+</style>
+</body>
+</html>
+```
