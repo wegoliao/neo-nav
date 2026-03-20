@@ -1,8 +1,8 @@
 // Neo-nav API connector
 // Global script only. Keep compatible with the inline page logic in index.html.
 
-var SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
-var SCRIPT_URL_PLACEHOLDER = 'YOUR_APPS_SCRIPT_URL_HERE';
+var SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMU3SLqBIR78BcUKL5MmUDtr-vFiwCmNdjHMVv0ohs2o0dSX45D53VA3zGAAgC3AYMHAmUykeMBmjqw4SmSE2ipknl3IBjFGlRvU_Hb4OLja4NlwiVS2PpnMHNjYXFRnnYG1azS5A2RNw7uCZIB7FUxU-FsLwEjmXLbbuWG-vhEEoMphvZc3orc4ZnqrO0VdImb76csWQz5nG4CHt8gGHirT0fF8WZ9Vzn_rJaLcd6yWrrGenMV40M0nvwtJoG-Mjmh8hom0iNgcE59S5fQ1uahG_IEohyQKAefX64Ww&lib=MB30yu0Gs3RCQKkJfDYGzi5QVv05oF4W2';
+var SCRIPT_URL_PLACEHOLDER = 'https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMU3SLqBIR78BcUKL5MmUDtr-vFiwCmNdjHMVv0ohs2o0dSX45D53VA3zGAAgC3AYMHAmUykeMBmjqw4SmSE2ipknl3IBjFGlRvU_Hb4OLja4NlwiVS2PpnMHNjYXFRnnYG1azS5A2RNw7uCZIB7FUxU-FsLwEjmXLbbuWG-vhEEoMphvZc3orc4ZnqrO0VdImb76csWQz5nG4CHt8gGHirT0fF8WZ9Vzn_rJaLcd6yWrrGenMV40M0nvwtJoG-Mjmh8hom0iNgcE59S5fQ1uahG_IEohyQKAefX64Ww&lib=MB30yu0Gs3RCQKkJfDYGzi5QVv05oF4W2';
 
 var API_ACTIONS = {
   HEALTH: 'health',
