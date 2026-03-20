@@ -13,9 +13,9 @@
     })();
   </script>
   <script>
-    tailwind.config = {
-      darkMode: 'class',
-    }
+    try {
+      tailwind.config = { darkMode: 'class' };
+    } catch(_) {}
   </script>
   <link rel="stylesheet" href="assets/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -430,6 +430,31 @@
         </div>
       </div>
 
+      <!-- Card: 今日課表重點（選填）-->
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">📅 今日課表重點（選填）</p>
+        <textarea id="parent-schedule-notes" rows="2"
+          class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+                 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+                 px-3 py-2 text-sm focus:outline-none focus:border-teal-400 resize-none"
+          placeholder="例：今天有體育課、午後有數學抽離…"></textarea>
+      </div>
+
+      <!-- Card: 今日建議工具（選填）-->
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">🛠 今日建議工具（選填）</p>
+        <textarea id="parent-support-tools" rows="2"
+          class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+                 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+                 px-3 py-2 text-sm focus:outline-none focus:border-teal-400 resize-none"
+          placeholder="例：計時器、重力毯、推牆…"></textarea>
+      </div>
+
+      <!-- Card: 每週接送規則 -->
+      <div id="parent-pickup-rules-card" class="mb-3">
+        <!-- filled by buildPickupRulesCard() -->
+      </div>
+
       <!-- Card: AI整合回饋摘要（唯讀顯示，由管理者填入）-->
       <div class="bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-2xl p-4 mb-3">
         <p class="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2 tracking-wide">🤖 最近 AI 整合回饋</p>
@@ -648,6 +673,23 @@
       </div>
       <div id="teacher-week-row" class="flex gap-1 justify-between">
         <!-- filled by buildWeekRow() -->
+      </div>
+    </div>
+
+    <!-- Section E: AI 整合回饋（唯讀） -->
+    <div id="teacher-ai-section" class="hidden">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="flex-1 h-px bg-purple-200 dark:bg-purple-800"></div>
+        <span class="text-xs text-purple-500 dark:text-purple-400 font-semibold">參考資訊</span>
+        <div class="flex-1 h-px bg-purple-200 dark:bg-purple-800"></div>
+      </div>
+      <div class="bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2">🤖 最近 AI 整合回饋</p>
+        <div id="teacher-ai-feedback" class="text-sm text-purple-700 dark:text-purple-300"></div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">📋 最近校外專家建議</p>
+        <div id="teacher-expert-suggestion" class="text-sm text-slate-700 dark:text-slate-300"></div>
       </div>
     </div>
 
@@ -915,10 +957,9 @@
   <!-- ===== PAGE: AFTERSCHOOL ===== -->
   <div id="page-afterschool" class="page pt-16 pb-12 px-4">
 
-    <!-- Weekday pickup rule banner -->
-    <div class="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-2xl p-3 mb-4 pt-2">
-      <p class="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-0.5">📅 今天的接送提示</p>
-      <p id="as-rule-text" class="text-sm text-blue-600 dark:text-blue-400">—</p>
+    <!-- Weekday pickup rules card -->
+    <div id="as-pickup-rules-card" class="mb-4 pt-2">
+      <!-- filled by buildPickupRulesCard() -->
     </div>
 
     <!-- Today's schedule highlight -->
@@ -929,41 +970,44 @@
     </div>
 
     <!-- HERO: 可接時間（第一屏最大元素）-->
-    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 mb-4">
-      <p class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">🕐 今天可接 Neo 的時間</p>
+    <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-5 mb-4 shadow-md">
+      <p class="text-sm font-bold text-blue-100 mb-1">🕐 今天可以接 Neo 的時間</p>
       <p id="as-pickup-display"
-        class="text-5xl font-black text-blue-600 dark:text-blue-400 text-center py-3 tracking-tight">
+        class="pickup-hero text-white mb-3">
         ——
       </p>
-      <div class="grid grid-cols-3 gap-2">
+      <!-- 現在可接 — 最大最顯眼 -->
+      <button class="btn-opt w-full h-14 rounded-xl font-black text-base
+                     bg-white text-blue-700 mb-2 shadow-sm"
+        data-group="as-pickup"
+        onclick="selectAfterSchoolPickup('now','現在可接 🟢',this)">
+        ✅ 現在可接
+      </button>
+      <div class="grid grid-cols-2 gap-2 mb-2">
         <button class="btn-opt h-12 rounded-xl font-semibold text-sm
-                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                       bg-white/20 text-white"
           data-group="as-pickup"
-          onclick="selectAfterSchoolPickup('now','現在可接 🟢',this)">現在可接</button>
+          onclick="selectAfterSchoolPickup('10','10 分後',this)">⏱ 10 分後</button>
         <button class="btn-opt h-12 rounded-xl font-semibold text-sm
-                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                       bg-white/20 text-white"
           data-group="as-pickup"
-          onclick="selectAfterSchoolPickup('10','10 分後',this)">10 分後</button>
+          onclick="selectAfterSchoolPickup('20','20 分後',this)">⏱ 20 分後</button>
         <button class="btn-opt h-12 rounded-xl font-semibold text-sm
-                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                       bg-white/20 text-white"
           data-group="as-pickup"
-          onclick="selectAfterSchoolPickup('20','20 分後',this)">20 分後</button>
+          onclick="selectAfterSchoolPickup('30','30 分後',this)">⏱ 30 分後</button>
         <button class="btn-opt h-12 rounded-xl font-semibold text-sm
-                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                       bg-white/20 text-white"
           data-group="as-pickup"
-          onclick="selectAfterSchoolPickup('30','30 分後',this)">30 分後</button>
-        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
-                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
-          data-group="as-pickup"
-          onclick="selectAfterSchoolPickup('pending','還沒寫完',this)">還沒寫完</button>
-        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
-                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
-          data-group="as-pickup"
-          onclick="selectAfterSchoolPickup('custom','自填',this)">自填時間</button>
+          onclick="selectAfterSchoolPickup('pending','還沒寫完 ✏️',this)">✏️ 還沒寫完</button>
       </div>
+      <button class="btn-opt w-full h-11 rounded-xl font-semibold text-sm
+                     bg-white/20 text-white"
+        data-group="as-pickup"
+        onclick="selectAfterSchoolPickup('custom','自填',this)">🕑 自填具體時間</button>
       <input type="time" id="as-pickup-custom"
-        class="hidden mt-2 w-full rounded-xl border border-slate-200 dark:border-slate-600
-               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+        class="hidden mt-2 w-full rounded-xl border border-white/30
+               bg-white/20 text-white placeholder-blue-200
                px-3 py-2 text-sm focus:outline-none"
         onchange="updatePickupCustomTime(this.value)" />
     </div>
@@ -1193,6 +1237,45 @@
       <p id="neo-diff-msg" class="text-sm text-slate-700 dark:text-slate-300"></p>
     </div>
 
+    <!-- Neo 每日導航筆記 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">📝 今日行程筆記</p>
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <div class="neo-nav-zone bg-amber-50 dark:bg-amber-950">
+          <p class="text-xs font-bold text-amber-700 dark:text-amber-300">🌅 上午</p>
+          <p id="neo-note-morning" class="text-xs text-amber-600 dark:text-amber-400 mt-1 leading-snug">—</p>
+        </div>
+        <div class="neo-nav-zone bg-sky-50 dark:bg-sky-950">
+          <p class="text-xs font-bold text-sky-700 dark:text-sky-300">☀️ 下午</p>
+          <p id="neo-note-afternoon" class="text-xs text-sky-600 dark:text-sky-400 mt-1 leading-snug">—</p>
+        </div>
+        <div class="neo-nav-zone bg-teal-50 dark:bg-teal-950">
+          <p class="text-xs font-bold text-teal-700 dark:text-teal-300">📚 放學後</p>
+          <p id="neo-note-afterschool" class="text-xs text-teal-600 dark:text-teal-400 mt-1 leading-snug">—</p>
+        </div>
+        <div class="neo-nav-zone bg-indigo-50 dark:bg-indigo-950">
+          <p class="text-xs font-bold text-indigo-700 dark:text-indigo-300">🌙 晚上</p>
+          <p id="neo-note-evening" class="text-xs text-indigo-600 dark:text-indigo-400 mt-1 leading-snug">—</p>
+        </div>
+      </div>
+      <!-- 今天工具 -->
+      <div class="bg-slate-50 dark:bg-slate-700 rounded-xl p-2.5 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">🛠 今天工具</p>
+        <p id="neo-note-tool" class="text-xs text-slate-600 dark:text-slate-300 mt-0.5">—</p>
+      </div>
+      <!-- 簽名區 -->
+      <div class="flex gap-3">
+        <div class="flex-1">
+          <p class="text-xs text-slate-400 dark:text-slate-500 mb-1 text-center">老師簽名</p>
+          <div class="sig-placeholder">✍️</div>
+        </div>
+        <div class="flex-1">
+          <p class="text-xs text-slate-400 dark:text-slate-500 mb-1 text-center">家長簽名</p>
+          <div class="sig-placeholder">✍️</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Submit -->
     <button id="neo-submit-btn" onclick="submitNeo()"
       class="w-full h-14 rounded-2xl mt-1
@@ -1220,6 +1303,11 @@
       class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700
              rounded-2xl p-4 mb-4 flex justify-between">
       <!-- filled by initOverviewPage() -->
+    </div>
+
+    <!-- Section 1b: 今日可接時間 -->
+    <div id="ov-pickup-time" class="mb-4">
+      <!-- filled by buildOvPickupTime() -->
     </div>
 
     <!-- Section 2: 本週任務狀況 -->
@@ -1281,6 +1369,12 @@
       <!-- filled by JS -->
     </div>
 
+    <!-- Section 9: 每週接送規則 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">📅 每週接送規則</p>
+    <div id="ov-pickup-rules-card" class="mb-4">
+      <!-- filled by buildPickupRulesCard() -->
+    </div>
+
   </div><!-- /page-overview -->
 
   <!-- ===== PAGE: SUCCESS ===== -->
@@ -1308,7 +1402,6 @@
 // CONSTANTS — preserve exactly
 // ============================================================
 const PASSWORD   = '30203';
-const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 const SHEET_URL  = 'YOUR_SHEET_JSON_URL_HERE';
 const VERSION    = 'v2.1';
 
@@ -1437,7 +1530,10 @@ function showPage(pageId, roleKey) {
     target.classList.add('active');
     window.scrollTo(0, 0);
     const initFn = PAGE_INITS[pageId];
-    if (initFn) initFn();
+    if (initFn) {
+      try { initFn(); }
+      catch(e) { console.error('[Neo-nav] initFn failed for ' + pageId + ':', e); }
+    }
   });
 
   currentPage = pageId;
@@ -1534,6 +1630,9 @@ const parentState = {
   supplements: null,
   regulationActions: '',
   notes: '',
+  expertSuggestion: '',
+  scheduleNotes: '',
+  supportTools: '',
   mode: 'quick',
 };
 
@@ -1556,7 +1655,8 @@ function initParentPage() {
     b.classList.remove('sel-green', 'sel-amber', 'sel-rose', 'sel-blue');
   });
   ['parent-reminder', 'parent-reporter-other-input',
-   'parent-regulation-actions', 'parent-notes'].forEach(id => {
+   'parent-regulation-actions', 'parent-notes',
+   'parent-schedule-notes', 'parent-support-tools'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -1576,6 +1676,7 @@ function setParentMode(mode) {
     fullSection.classList.remove('hidden');
     pillFull.classList.add('pill-active');
     pillQuick.classList.remove('pill-active');
+    buildPickupRulesCard('parent-pickup-rules-card');
   } else {
     fullSection.classList.add('hidden');
     pillQuick.classList.add('pill-active');
@@ -1606,6 +1707,8 @@ function submitParent() {
     parentState.regulationActions = document.getElementById('parent-regulation-actions').value.trim();
     parentState.notes             = document.getElementById('parent-notes').value.trim();
     parentState.expertSuggestion  = document.getElementById('parent-expert-suggestion').value.trim();
+    parentState.scheduleNotes     = (document.getElementById('parent-schedule-notes') || {value:''}).value.trim();
+    parentState.supportTools      = (document.getElementById('parent-support-tools') || {value:''}).value.trim();
   }
   if (parentState.reporter === 'other') {
     parentState.reporterOther = document.getElementById('parent-reporter-other-input').value.trim();
@@ -1630,6 +1733,8 @@ function submitParent() {
       regulationActions: parentState.regulationActions,
       notes:             parentState.notes,
       expertSuggestion:  parentState.expertSuggestion,
+      today_schedule_notes: parentState.scheduleNotes,
+      today_support_tools:  parentState.supportTools,
     }),
     timestamp: Date.now(),
   };
@@ -1779,6 +1884,37 @@ function initTeacherPage() {
   buildParentSummaryCard('teacher-parent-summary');
   buildScheduleCard('teacher-schedule-card');
   buildWeekRow('teacher', 'teacher-week-row');
+  buildTeacherRefSection();
+}
+
+function buildTeacherRefSection() {
+  // Look for recent AI feedback and expert suggestion in parent data
+  const today = new Date();
+  let aiFeedback = null, expertSuggestion = null;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const key = d.getFullYear() + '-'
+      + String(d.getMonth()+1).padStart(2,'0') + '-'
+      + String(d.getDate()).padStart(2,'0');
+    const rec = loadFromStorage('neo-parentData-' + key);
+    if (rec) {
+      if (!aiFeedback && rec.aiSummary)         aiFeedback = { text: rec.aiSummary, date: key };
+      if (!expertSuggestion && rec.expertSuggestion) expertSuggestion = { text: rec.expertSuggestion, date: key };
+    }
+    if (aiFeedback && expertSuggestion) break;
+  }
+  const section = document.getElementById('teacher-ai-section');
+  if (!section) return;
+  const hasSomething = aiFeedback || expertSuggestion;
+  section.classList.toggle('hidden', !hasSomething);
+  const aiEl = document.getElementById('teacher-ai-feedback');
+  if (aiEl) aiEl.innerHTML = aiFeedback
+    ? `<p>${aiFeedback.text}</p><p class="text-xs text-slate-400 mt-1">${aiFeedback.date}</p>`
+    : '<p class="text-xs text-slate-400">尚無 AI 回饋</p>';
+  const expEl = document.getElementById('teacher-expert-suggestion');
+  if (expEl) expEl.innerHTML = expertSuggestion
+    ? `<p>${expertSuggestion.text}</p><p class="text-xs text-slate-400 mt-1">${expertSuggestion.date}</p>`
+    : '<p class="text-xs text-slate-400">尚無校外專家建議</p>';
 }
 
 function selectTeacherBtn(group, value, el, selClass) {
@@ -2049,9 +2185,8 @@ function initAfterSchoolPage() {
   if (custEl) { custEl.value = ''; custEl.classList.add('hidden'); }
   const noteEl = document.getElementById('as-note');
   if (noteEl) noteEl.value = '';
-  // Show weekday rule
-  const ruleEl = document.getElementById('as-rule-text');
-  if (ruleEl) ruleEl.textContent = PICKUP_RULES[new Date().getDay()] || '—';
+  // Show weekday rules card
+  buildPickupRulesCard('as-pickup-rules-card');
   buildScheduleCard('as-schedule-card');
 }
 
@@ -2140,6 +2275,7 @@ function initNeoPage() {
   // Build nav map + parent view
   buildNeoNavCard('neo-nav-zones');
   buildNeoParentView();
+  buildNeoNavNotes();
 }
 
 function selectNeoBtn(group, value, el, bgColor, borderColor) {
@@ -2176,6 +2312,24 @@ function buildNeoParentView() {
     </p>
     ${p.reminder ? `<p class="text-xs text-amber-600 dark:text-amber-400">"${p.reminder}"</p>` : ''}
   `;
+}
+
+function buildNeoNavNotes() {
+  const day = new Date().getDay();
+  const zones = (DAILY_SCHEDULE[day] || DAILY_SCHEDULE[0]).navZones;
+  const map = {
+    morning:     'neo-note-morning',
+    afternoon:   'neo-note-afternoon',
+    afterschool: 'neo-note-afterschool',
+    evening:     'neo-note-evening',
+  };
+  Object.entries(map).forEach(([zone, elId]) => {
+    const el = document.getElementById(elId);
+    if (!el || !zones[zone]) return;
+    el.textContent = zones[zone].activity;
+  });
+  const toolEl = document.getElementById('neo-note-tool');
+  if (toolEl && zones.morning) toolEl.textContent = zones.morning.tool;
 }
 
 function checkNeoDiff() {
@@ -2226,12 +2380,14 @@ function initOverviewPage() {
   const dateEl = document.getElementById('ov-date');
   if (dateEl) dateEl.textContent = getTodayDisplay();
   buildSubmittedBadges();
+  buildOvPickupTime();
   buildMedVsFocus();
   buildInterestVsHw();
   buildOvDiffCard();
   buildParentReply();
   buildOvAiFeedback();
   buildOvExpertSuggestion();
+  buildPickupRulesCard('ov-pickup-rules-card');
   if (window.NeoApi && NeoApi.isConfigured()) {
     NeoApi.getLast7Days().then(function(apiData) {
       buildOvWeekBarsFromApi(apiData.records || []);
@@ -2547,19 +2703,96 @@ function sendParentReply() {
 }
 
 // ============================================================
+// PICKUP RULES CARD (shared across pages)
+// ============================================================
+const PICKUP_RULES_FULL = [
+  { day: 0, label: '週日', rule: '假日' },
+  { day: 1, label: '週一', rule: '17:50 前接，18:00 固定諮商' },
+  { day: 2, label: '週二', rule: '18:00 後可接' },
+  { day: 3, label: '週三', rule: '17:30 校門口接（安親後回學校）' },
+  { day: 4, label: '週四', rule: '18:00 後可接' },
+  { day: 5, label: '週五', rule: '17:30 校門口接（安親後回學校）' },
+  { day: 6, label: '週六', rule: '假日' },
+];
+
+function buildPickupRulesCard(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const todayDay = new Date().getDay();
+  const rows = PICKUP_RULES_FULL.map(r => {
+    const isToday = r.day === todayDay;
+    return `<div class="pickup-rule-row ${isToday ? 'today-rule' : ''}
+                        flex items-center justify-between">
+      <span class="text-xs font-semibold w-8">${r.label}</span>
+      <span class="text-xs flex-1 ml-2">${r.rule}</span>
+      ${isToday ? '<span class="text-xs font-bold ml-2">← 今天</span>' : ''}
+    </div>`;
+  }).join('');
+  el.innerHTML = `
+    <div class="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-2xl p-3">
+      <p class="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2">📅 每週接送規則</p>
+      <div class="space-y-1">${rows}</div>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">特殊變動以家長當日更新為準</p>
+    </div>`;
+}
+
+// ============================================================
+// OVERVIEW: Pickup Time Section
+// ============================================================
+function buildOvPickupTime() {
+  const el = document.getElementById('ov-pickup-time');
+  if (!el) return;
+  const today = getTodayString();
+  const as = loadFromStorage(`neo-afterschoolData-${today}`);
+  const todayDay = new Date().getDay();
+  const todayRule = PICKUP_RULES[todayDay] || '—';
+  if (!as || !as.pickupLabel || as.pickupLabel === '——') {
+    el.innerHTML = `
+      <div class="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">🕐 今日可接時間</p>
+        <p class="text-sm text-slate-400 dark:text-slate-500">安親班尚未更新</p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">今日規則：${todayRule}</p>
+      </div>`;
+    return;
+  }
+  const colorClass = as.pickup === 'now'
+    ? 'bg-green-500' : as.pickup === 'pending'
+    ? 'bg-amber-500' : 'bg-blue-500';
+  el.innerHTML = `
+    <div class="${colorClass} rounded-2xl p-4 text-white shadow-md">
+      <p class="text-xs font-semibold text-white/80 mb-1">🕐 今日可接時間（安親班更新）</p>
+      <p class="text-3xl font-black tracking-tight">${as.pickupLabel}</p>
+      <p class="text-xs text-white/70 mt-1">今日規則：${todayRule}</p>
+    </div>`;
+}
+
+// ============================================================
 // BOOT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  document.getElementById('login-version').textContent = VERSION;
-  checkSession();
-  // Ping API for connection status indicator
-  if (window.NeoApi && NeoApi.isConfigured()) {
-    NeoApi.ping().then(function() {
-      updateApiDot('ok');
-    }).catch(function() {
-      updateApiDot('err');
-    });
+  try {
+    initTheme();
+    const versionEl = document.getElementById('login-version');
+    if (versionEl) versionEl.textContent = VERSION;
+    checkSession();
+    // Ping API for connection status indicator
+    if (window.NeoApi && NeoApi.isConfigured()) {
+      NeoApi.ping().then(function() {
+        updateApiDot('ok');
+      }).catch(function() {
+        updateApiDot('err');
+      });
+    }
+  } catch(bootErr) {
+    console.error('[Neo-nav] Boot error — forcing login page:', bootErr);
+    // Last-ditch: make login page visible even if showPage() failed
+    try {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const loginPage = document.getElementById('page-login');
+      if (loginPage) loginPage.classList.add('active');
+      const header = document.getElementById('app-header');
+      if (header) header.classList.add('hidden');
+    } catch(_) {}
   }
 });
 </script>
