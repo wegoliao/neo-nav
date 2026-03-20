@@ -2,3 +2,6 @@
 Thumbs.db
 .vscode/
 *.swp
+
+.claude/
+Monica/
