@@ -1,0 +1,3 @@
+# Role Handoff Architecture
+
+Placeholder.

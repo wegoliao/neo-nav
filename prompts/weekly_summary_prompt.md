@@ -1,0 +1,3 @@
+# Weekly Summary Prompt
+
+Placeholder.

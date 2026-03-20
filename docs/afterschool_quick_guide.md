@@ -1,0 +1,3 @@
+# Afterschool Quick Guide
+
+Placeholder.
