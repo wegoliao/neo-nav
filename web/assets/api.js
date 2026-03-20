@@ -364,6 +364,18 @@ window.NeoApi = (function () {
     return result;
   }
 
+  function addLegacyCompatFields(record) {
+    if (record.today_schedule_notes && !record.scheduleNotes) {
+      record.scheduleNotes = record.today_schedule_notes;
+    }
+
+    if (record.today_support_tools && !record.supportTools) {
+      record.supportTools = record.today_support_tools;
+    }
+
+    return record;
+  }
+
   function normalizeReadPayload(json) {
     var records = Array.isArray(json.records)
       ? json.records
@@ -390,10 +402,12 @@ window.NeoApi = (function () {
 
   function postRecord(roleOrPayload, maybePayload) {
     var resolved = resolvePostArgs(roleOrPayload, maybePayload);
-    var body = normalizeOutboundRecord(resolved.role, resolved.payload);
+    var body = addLegacyCompatFields(
+      normalizeOutboundRecord(resolved.role, resolved.payload)
+    );
     body.action = 'write';
 
-    return requestJson(SCRIPT_URL, {
+    return requestJson('postRecord', SCRIPT_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -403,28 +417,30 @@ window.NeoApi = (function () {
   }
 
   function getTodaySummary() {
-    return requestJson('getTodaySummary', buildUrl('today_summary')).then(function (json) {
-      return normalizeReadPayload(json.data || {});
+    return requestJson('getTodaySummary', buildUrl('read', { days: 1 })).then(function (json) {
+      return normalizeReadPayload(json);
     });
   }
 
   function getLast7Days() {
-    return requestJson('getLast7Days', buildUrl('last_7_days')).then(function (json) {
-      return normalizeReadPayload(json.data || {});
+    return requestJson('getLast7Days', buildUrl('read', { days: 7 })).then(function (json) {
+      return normalizeReadPayload(json);
     });
   }
 
   function getOverviewData() {
-    return requestJson('getOverviewData', buildUrl('overview')).then(function (json) {
-      var data = json.data || {};
-      var last7 = normalizeReadPayload(data.last7Days || {});
+    return requestJson('getOverviewData', buildUrl('read', { days: 7 })).then(function (json) {
+      var last7 = normalizeReadPayload(json);
 
       return {
-        records: Array.isArray(data.records) ? data.records : last7.records,
+        records: last7.records,
         count: last7.count,
-        todaySummary: data.todaySummary || {},
-        last7Days: data.last7Days || {},
-        generatedAt: data.generatedAt || '',
+        todaySummary: {
+          records: last7.records,
+          count: last7.count,
+        },
+        last7Days: last7,
+        generatedAt: new Date().toISOString(),
       };
     });
   }
