@@ -1,0 +1,2567 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>河堤國小 3年2班 3號 · Neo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Apply saved theme BEFORE render to avoid flash
+    (function() {
+      const t = localStorage.getItem('neo-theme');
+      if (t === 'dark') document.documentElement.classList.replace('light','dark');
+    })();
+  </script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body class="
+  bg-slate-50 text-slate-800
+  dark:bg-slate-900 dark:text-slate-100
+  min-h-screen font-sans
+  transition-colors duration-300
+">
+
+<!-- =====================================================
+     GLOBAL HEADER (shown on all pages except login)
+===================================================== -->
+<header id="app-header" class="
+  hidden fixed top-0 left-0 right-0 z-50
+  max-w-md mx-auto
+  flex items-center justify-between
+  px-4 py-3
+  bg-white/80 dark:bg-slate-900/80
+  backdrop-blur border-b border-slate-200 dark:border-slate-700
+">
+  <div class="flex items-center gap-2">
+    <button id="header-back" onclick="goBack()"
+      class="text-slate-400 dark:text-slate-500 text-sm font-medium
+             hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+      ← 返回
+    </button>
+    <span id="header-title" class="text-sm font-semibold text-slate-700 dark:text-slate-300"></span>
+  </div>
+  <div class="flex items-center gap-3">
+    <span id="header-date" class="text-xs text-slate-400 dark:text-slate-500"></span>
+    <span id="api-status-dot" class="api-dot off" title="API 連線狀態"></span>
+    <button id="theme-toggle" onclick="toggleTheme()" title="切換明暗模式"
+      class="w-9 h-9 flex items-center justify-center rounded-full
+             bg-slate-100 dark:bg-slate-700
+             text-slate-600 dark:text-slate-300
+             border border-slate-200 dark:border-slate-600
+             text-lg">
+      <span id="theme-icon">☀️</span>
+    </button>
+  </div>
+</header>
+
+<!-- =====================================================
+     APP CONTAINER
+===================================================== -->
+<div id="app" class="max-w-md mx-auto min-h-screen flex flex-col">
+
+  <!-- ===== PAGE: LOGIN ===== -->
+  <div id="page-login" class="page min-h-screen items-center justify-center px-6">
+
+    <!-- Theme toggle (login has its own since header is hidden) -->
+    <div class="absolute top-4 right-4">
+      <button onclick="toggleTheme()" title="切換明暗模式"
+        class="w-10 h-10 flex items-center justify-center rounded-full
+               bg-white dark:bg-slate-800
+               border border-slate-200 dark:border-slate-600
+               shadow-sm text-xl"
+        id="login-theme-btn">
+        <span class="theme-icon-display">☀️</span>
+      </button>
+    </div>
+
+    <div class="w-full max-w-sm">
+      <!-- Logo / Title -->
+      <div class="text-center mb-10">
+        <div class="text-5xl mb-4 select-none">🏫</div>
+        <h1 class="text-xl font-bold text-blue-700 dark:text-blue-400 leading-snug tracking-tight">
+          河堤國小 3年2班 3號
+        </h1>
+        <h2 class="text-3xl font-black text-slate-800 dark:text-slate-100 mt-1 tracking-tight">
+          · Neo ·
+        </h2>
+        <p id="login-date" class="text-sm text-slate-400 dark:text-slate-500 mt-3"></p>
+      </div>
+
+      <!-- Login card -->
+      <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-lg p-6
+                  border border-slate-100 dark:border-slate-700">
+        <label for="login-password"
+          class="block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-3">
+          請輸入通行碼
+        </label>
+        <input
+          id="login-password"
+          type="password"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          maxlength="10"
+          placeholder="· · · · ·"
+          autocomplete="off"
+          class="w-full rounded-2xl border-2 border-slate-200 dark:border-slate-600
+                 bg-slate-50 dark:bg-slate-700
+                 text-slate-800 dark:text-slate-100
+                 p-4 text-2xl text-center tracking-[0.4em]
+                 focus:outline-none focus:border-blue-400 dark:focus:border-blue-500
+                 transition-colors"
+          onkeydown="if(event.key==='Enter') handleLogin()"
+        />
+        <p id="login-error"
+          class="hidden text-red-500 dark:text-red-400 text-sm text-center mt-2 font-medium">
+          密碼錯誤，請再試一次 🔑
+        </p>
+        <button onclick="handleLogin()"
+          class="mt-4 w-full h-14 rounded-2xl
+                 bg-blue-600 hover:bg-blue-700 active:bg-blue-800
+                 dark:bg-blue-500 dark:hover:bg-blue-600
+                 text-white text-lg font-bold
+                 transition-colors shadow-sm">
+          進入
+        </button>
+      </div>
+
+      <!-- Version -->
+      <p id="login-version"
+        class="text-xs text-slate-300 dark:text-slate-600 text-right mt-4 pr-1"></p>
+    </div>
+  </div><!-- /page-login -->
+
+
+  <!-- ===== PAGE: ROLE ===== -->
+  <div id="page-role" class="page pt-16 pb-10 px-4">
+
+    <!-- Greeting -->
+    <div class="text-center mb-6 pt-2">
+      <p id="role-greeting"
+        class="text-base font-semibold text-slate-700 dark:text-slate-300"></p>
+      <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">今天，你是哪個角色？</p>
+    </div>
+
+    <!-- Role cards grid -->
+    <div class="grid grid-cols-2 gap-3 mb-3">
+
+      <!-- 家長 -->
+      <button onclick="goRole('parent')"
+        class="role-card bg-white dark:bg-slate-800
+               border border-slate-100 dark:border-slate-700
+               rounded-2xl shadow-sm p-4
+               flex flex-col items-center justify-center
+               min-h-[7rem] text-center active:bg-blue-50 dark:active:bg-slate-700">
+        <span class="text-3xl mb-2" role="img" aria-label="家長">👨‍👩‍👧</span>
+        <span class="text-sm font-bold text-slate-800 dark:text-slate-100">家長</span>
+        <span class="text-xs text-slate-400 dark:text-slate-500 mt-1 leading-tight">
+          早晨狀態 &amp; 晚間承接
+        </span>
+      </button>
+
+      <!-- 導師 -->
+      <button onclick="goRole('teacher')"
+        class="role-card bg-white dark:bg-slate-800
+               border border-slate-100 dark:border-slate-700
+               rounded-2xl shadow-sm p-4
+               flex flex-col items-center justify-center
+               min-h-[7rem] text-center active:bg-blue-50 dark:active:bg-slate-700">
+        <span class="text-3xl mb-2" role="img" aria-label="導師">📋</span>
+        <span class="text-sm font-bold text-slate-800 dark:text-slate-100">導師</span>
+        <span class="text-xs text-slate-400 dark:text-slate-500 mt-1 leading-tight">
+          課堂觀察 &amp; 今日摘要
+        </span>
+      </button>
+
+      <!-- 特教老師 -->
+      <button onclick="goRole('specialed')"
+        class="role-card bg-white dark:bg-slate-800
+               border border-slate-100 dark:border-slate-700
+               rounded-2xl shadow-sm p-4
+               flex flex-col items-center justify-center
+               min-h-[7rem] text-center active:bg-blue-50 dark:active:bg-slate-700">
+        <span class="text-3xl mb-2" role="img" aria-label="特教老師">🧩</span>
+        <span class="text-sm font-bold text-slate-800 dark:text-slate-100">特教老師</span>
+        <span class="text-xs text-slate-400 dark:text-slate-500 mt-1 leading-tight">
+          OT 任務 &amp; 支持焦點
+        </span>
+      </button>
+
+      <!-- 安親班 -->
+      <button onclick="goRole('afterschool')"
+        class="role-card bg-white dark:bg-slate-800
+               border border-slate-100 dark:border-slate-700
+               rounded-2xl shadow-sm p-4
+               flex flex-col items-center justify-center
+               min-h-[7rem] text-center active:bg-blue-50 dark:active:bg-slate-700">
+        <span class="text-3xl mb-2" role="img" aria-label="安親班">🎒</span>
+        <span class="text-sm font-bold text-slate-800 dark:text-slate-100">安親班老師</span>
+        <span class="text-xs text-slate-400 dark:text-slate-500 mt-1 leading-tight">
+          可接時間 &amp; 作業狀況
+        </span>
+      </button>
+
+    </div>
+
+    <!-- Neo 自填 — full width, special style -->
+    <button onclick="goRole('neo')"
+      class="role-card w-full mb-3
+             bg-gradient-to-r from-amber-400 to-orange-400
+             dark:from-amber-500 dark:to-orange-500
+             rounded-2xl shadow-sm p-4
+             flex items-center justify-center gap-3
+             min-h-[5rem] active:opacity-90">
+      <span class="text-3xl" role="img" aria-label="Neo">⭐</span>
+      <div class="text-left">
+        <p class="text-base font-black text-white">Neo（我自己）</p>
+        <p class="text-xs text-amber-100">今天的感覺怎麼樣？</p>
+      </div>
+    </button>
+
+    <!-- Overview — subtle link style -->
+    <button onclick="goRole('overview')"
+      class="role-card w-full
+             bg-slate-100 dark:bg-slate-800
+             border border-slate-200 dark:border-slate-700
+             rounded-2xl p-4
+             flex items-center justify-center gap-3
+             min-h-[4rem] active:bg-slate-200 dark:active:bg-slate-700">
+      <span class="text-2xl" role="img" aria-label="縱覽">📊</span>
+      <div class="text-left">
+        <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">縱覽模式</p>
+        <p class="text-xs text-slate-400 dark:text-slate-500">本週趨勢 &amp; 各角色資料</p>
+      </div>
+    </button>
+
+    <!-- Logout link -->
+    <div class="text-center mt-8">
+      <button onclick="logout()"
+        class="text-xs text-slate-300 dark:text-slate-600
+               hover:text-slate-500 dark:hover:text-slate-400
+               transition-colors underline underline-offset-2">
+        登出
+      </button>
+    </div>
+  </div><!-- /page-role -->
+
+
+  <!-- ===== PLACEHOLDER PAGES (Phase 2+) ===== -->
+
+  <!-- ===== PAGE: PARENT ===== -->
+  <div id="page-parent" class="page pt-16 pb-12 px-4">
+
+    <!-- Mode pill -->
+    <div class="flex justify-end mb-4 pt-2">
+      <div class="inline-flex rounded-full bg-slate-100 dark:bg-slate-800 p-1 gap-0.5">
+        <button id="pill-quick" onclick="setParentMode('quick')"
+          class="pill-btn pill-active px-3 py-1.5 text-xs font-semibold">
+          ⚡ 30 秒快速
+        </button>
+        <button id="pill-full" onclick="setParentMode('full')"
+          class="pill-btn px-3 py-1.5 text-xs font-semibold">
+          完整模式
+        </button>
+      </div>
+    </div>
+
+    <!-- Today's schedule highlight -->
+    <div id="parent-schedule-card"
+      class="bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800
+             rounded-2xl p-3 mb-3">
+      <!-- filled by initParentPage() -->
+    </div>
+
+    <!-- Card 1: 填報人 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">填報人</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="reporter" onclick="selectParentBtn('reporter','爸爸',this,'sel-blue')">爸爸</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="reporter" onclick="selectParentBtn('reporter','媽媽',this,'sel-blue')">媽媽</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="reporter" onclick="selectParentBtn('reporter','other',this,'sel-blue')">其他</button>
+      </div>
+      <input type="text" id="parent-reporter-other-input"
+        class="hidden mt-2 w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+        placeholder="請輸入稱謂…" />
+    </div>
+
+    <!-- Card 2: 今天的起跑點 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">今天的起跑點</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-14 rounded-xl font-bold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5"
+          data-group="status" onclick="selectParentBtn('status','stable',this,'sel-green')">
+          <span class="text-xl leading-none">🟢</span><span>穩</span>
+        </button>
+        <button class="btn-opt flex-1 h-14 rounded-xl font-bold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5"
+          data-group="status" onclick="selectParentBtn('status','ok',this,'sel-amber')">
+          <span class="text-xl leading-none">🟡</span><span>普通</span>
+        </button>
+        <button class="btn-opt flex-1 h-14 rounded-xl font-bold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5"
+          data-group="status" onclick="selectParentBtn('status','unstable',this,'sel-rose')">
+          <span class="text-xl leading-none">🔴</span><span>波動</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Card 3: 今天有吃嗎？ -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">今天有吃嗎？</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="medTaken" onclick="selectParentBtn('medTaken','yes',this,'sel-blue')">有 ✅</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="medTaken" onclick="selectParentBtn('medTaken','no',this,'sel-blue')">沒有</button>
+      </div>
+    </div>
+
+    <!-- Card 4: 今天有做調節嗎？ -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">今天有做調節嗎？</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="regulated" onclick="selectParentBtn('regulated','yes',this,'sel-blue')">有做 🌟</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="regulated" onclick="selectParentBtn('regulated','no',this,'sel-blue')">沒有</button>
+      </div>
+    </div>
+
+    <!-- Card 5: 今日提醒老師一句 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">今日提醒老師一句</p>
+      <input type="text" id="parent-reminder"
+        class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-3 text-sm focus:outline-none focus:border-blue-400 transition-colors"
+        placeholder="例：今天早起，狀態不錯" />
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1.5">選填，空白也可以送出</p>
+    </div>
+
+    <!-- ── FULL MODE SECTION (hidden by default) ── -->
+    <div id="parent-full-section" class="hidden">
+
+      <div class="flex items-center gap-3 my-4">
+        <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+        <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">完整資訊（選填）</span>
+        <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+      </div>
+
+      <!-- Card 6: 昨晚睡眠 -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">昨晚睡眠</p>
+        <div class="flex gap-2">
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="sleep" onclick="selectParentBtn('sleep','good',this,'sel-green')">好 😴</button>
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="sleep" onclick="selectParentBtn('sleep','ok',this,'sel-amber')">普通</button>
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="sleep" onclick="selectParentBtn('sleep','poor',this,'sel-rose')">差 😵</button>
+        </div>
+      </div>
+
+      <!-- Card 7: 喝水量 -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">喝水量</p>
+        <div class="flex gap-2">
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="water" onclick="selectParentBtn('water','enough',this,'sel-blue')">充足 💧</button>
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="water" onclick="selectParentBtn('water','ok',this,'sel-blue')">普通</button>
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="water" onclick="selectParentBtn('water','less',this,'sel-blue')">少</button>
+        </div>
+      </div>
+
+      <!-- Card 8: 吃飯量 -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">吃飯量</p>
+        <div class="flex gap-2">
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="food" onclick="selectParentBtn('food','good',this,'sel-green')">吃得好 🍱</button>
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="food" onclick="selectParentBtn('food','ok',this,'sel-amber')">普通</button>
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="food" onclick="selectParentBtn('food','less',this,'sel-rose')">少</button>
+        </div>
+      </div>
+
+      <!-- Card 9: 益生菌／保健品 -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">益生菌 ／ 保健品</p>
+        <div class="flex gap-2">
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="supplements" onclick="selectParentBtn('supplements','yes',this,'sel-blue')">有吃</button>
+          <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                         bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+            data-group="supplements" onclick="selectParentBtn('supplements','no',this,'sel-blue')">沒有</button>
+        </div>
+      </div>
+
+      <!-- Card: AI整合回饋摘要（唯讀顯示，由管理者填入）-->
+      <div class="bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2 tracking-wide">🤖 最近 AI 整合回饋</p>
+        <div id="parent-ai-feedback" class="text-sm text-purple-700 dark:text-purple-300">
+          <p class="text-xs text-slate-400 dark:text-slate-500">尚無 AI 回饋</p>
+        </div>
+      </div>
+
+      <!-- Card: 校外專家建議（家長填入）-->
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">📋 校外專家建議（選填）</p>
+        <textarea id="parent-expert-suggestion" rows="2"
+          class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+                 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+                 px-3 py-2 text-sm focus:outline-none focus:border-purple-400 resize-none"
+          placeholder="例：OT老師建議這週練習…"></textarea>
+      </div>
+
+      <!-- Card 10: 調節動作 -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">調節動作（選填）</p>
+        <textarea id="parent-regulation-actions" rows="2"
+          class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+                 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+                 px-3 py-2 text-sm focus:outline-none focus:border-blue-400 resize-none"
+          placeholder="例：早上推牆、散步 20 分鐘…"></textarea>
+      </div>
+
+      <!-- Card 11: 備註 -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">備註（選填）</p>
+        <textarea id="parent-notes" rows="3"
+          class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+                 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+                 px-3 py-2 text-sm focus:outline-none focus:border-blue-400 resize-none"
+          placeholder="其他想讓學校知道的事…"></textarea>
+      </div>
+
+    </div><!-- /parent-full-section -->
+
+    <!-- Submit -->
+    <button id="parent-submit-btn" onclick="submitParent()"
+      class="w-full h-14 rounded-2xl mt-2
+             bg-blue-600 hover:bg-blue-700 active:bg-blue-800
+             dark:bg-blue-500 dark:hover:bg-blue-600
+             text-white text-base font-bold
+             transition-colors shadow-sm">
+      送出今日回報
+    </button>
+
+  </div><!-- /page-parent -->
+
+  <!-- ===== PAGE: TEACHER ===== -->
+  <div id="page-teacher" class="page pt-16 pb-12 px-4">
+
+    <!-- Section A: 家長今日摘要 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2 pt-2">
+      📋 家長今日摘要
+    </p>
+    <div id="teacher-parent-summary"
+      class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700
+             rounded-2xl p-4 mb-4 min-h-[3rem]">
+      <!-- filled by initTeacherPage() -->
+    </div>
+
+    <!-- Today's schedule highlight -->
+    <div id="teacher-schedule-card"
+      class="bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800
+             rounded-2xl p-3 mb-4">
+      <!-- filled by initTeacherPage() -->
+    </div>
+
+    <!-- Section B: 今日觀察 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">
+      👀 今日觀察（快速勾選）
+    </p>
+
+    <!-- Card: 任務進入狀況 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">任務進入狀況</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="taskEntry"
+          onclick="selectTeacherBtn('taskEntry','smooth',this,'sel-green')">
+          <span class="text-lg leading-none">✅</span><span>順利</span>
+        </button>
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="taskEntry"
+          onclick="selectTeacherBtn('taskEntry','remind',this,'sel-amber')">
+          <span class="text-lg leading-none">⚠️</span><span>需提醒</span>
+        </button>
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="taskEntry"
+          onclick="selectTeacherBtn('taskEntry','hard',this,'sel-rose')">
+          <span class="text-lg leading-none">🔴</span><span>困難</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Card: 興趣度 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">興趣度</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="interest"
+          onclick="selectTeacherBtn('interest','high',this,'sel-green')">
+          <span class="text-lg leading-none">🔥</span><span>高</span>
+        </button>
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="interest"
+          onclick="selectTeacherBtn('interest','mid',this,'sel-amber')">
+          <span class="text-lg leading-none">😊</span><span>中</span>
+        </button>
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="interest"
+          onclick="selectTeacherBtn('interest','low',this,'sel-rose')">
+          <span class="text-lg leading-none">😐</span><span>低</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Support Box: 觸發於 困難 或 低 -->
+    <div id="teacher-support-box" class="support-box mb-3">
+      <div class="bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800
+                  rounded-2xl p-4">
+        <p class="text-sm font-bold text-orange-700 dark:text-orange-300 mb-3">
+          💡 可以先試試 →
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-300
+                       border border-orange-200 dark:border-orange-700
+                       text-xs font-semibold px-3 py-1.5 rounded-full">先推牆 20 秒</span>
+          <span class="bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-300
+                       border border-orange-200 dark:border-orange-700
+                       text-xs font-semibold px-3 py-1.5 rounded-full">任務拆兩步</span>
+          <span class="bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-300
+                       border border-orange-200 dark:border-orange-700
+                       text-xs font-semibold px-3 py-1.5 rounded-full">先喝水再回座</span>
+          <span class="bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-300
+                       border border-orange-200 dark:border-orange-700
+                       text-xs font-semibold px-3 py-1.5 rounded-full">短暫離開再回來</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: 是否頻繁如廁 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">是否頻繁如廁</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="toiletFreq"
+          onclick="selectTeacherBtn('toiletFreq','yes',this,'sel-blue')">有</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="toiletFreq"
+          onclick="selectTeacherBtn('toiletFreq','no',this,'sel-blue')">無</button>
+      </div>
+    </div>
+
+    <!-- Card: 備註一句 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">備註一句（選填）</p>
+      <input type="text" id="teacher-note"
+        class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-3 text-sm focus:outline-none focus:border-blue-400 transition-colors"
+        placeholder="例：今天有點分心，但完成了數學作業" />
+    </div>
+
+    <!-- Section C: 課後欄 -->
+    <div class="flex items-center gap-3 my-4">
+      <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+      <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">課後欄 / 自由填寫</span>
+      <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">課後回饋 / 自由欄</p>
+      <textarea id="teacher-free-note" rows="3"
+        class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-2 text-sm focus:outline-none focus:border-blue-400 resize-none"
+        placeholder="今天一句話…（也可空白送出）"></textarea>
+    </div>
+
+    <!-- Section D: 近 7 天 -->
+    <div class="flex items-center gap-3 mb-3">
+      <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+      <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">近 7 天</span>
+      <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+    </div>
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700
+                rounded-2xl px-4 py-3 mb-4">
+      <div class="flex items-center gap-2 mb-2">
+        <span style="display:inline-block;width:.75rem;height:.75rem;border-radius:9999px;background:#34d399"></span>
+        <span class="text-xs text-slate-400 dark:text-slate-500">順利</span>
+        <span style="display:inline-block;width:.75rem;height:.75rem;border-radius:9999px;background:#fbbf24"></span>
+        <span class="text-xs text-slate-400 dark:text-slate-500">需提醒</span>
+        <span style="display:inline-block;width:.75rem;height:.75rem;border-radius:9999px;background:#fb7185"></span>
+        <span class="text-xs text-slate-400 dark:text-slate-500">困難</span>
+        <span style="display:inline-block;width:.75rem;height:.75rem;border-radius:9999px;background:#e2e8f0"></span>
+        <span class="text-xs text-slate-400 dark:text-slate-500">未填</span>
+      </div>
+      <div id="teacher-week-row" class="flex gap-1 justify-between">
+        <!-- filled by buildWeekRow() -->
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button id="teacher-submit-btn" onclick="submitTeacher()"
+      class="w-full h-14 rounded-2xl
+             bg-blue-600 hover:bg-blue-700 active:bg-blue-800
+             dark:bg-blue-500 dark:hover:bg-blue-600
+             text-white text-base font-bold
+             transition-colors shadow-sm">
+      送出今日觀察
+    </button>
+
+  </div><!-- /page-teacher -->
+
+  <!-- ===== PAGE: SPECIAL ED ===== -->
+  <div id="page-specialed" class="page pt-16 pb-12 px-4">
+
+    <!-- Section A: 家長今日摘要 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2 pt-2">
+      📋 家長今日摘要
+    </p>
+    <div id="specialed-parent-summary"
+      class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700
+             rounded-2xl p-4 mb-4 min-h-[3rem]">
+      <!-- filled by initSpecialedPage() -->
+    </div>
+
+    <!-- Today's schedule highlight -->
+    <div id="specialed-schedule-card"
+      class="bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800
+             rounded-2xl p-3 mb-4">
+      <!-- filled by initSpecialedPage() -->
+    </div>
+
+    <!-- Section B: 今日觀察（同導師） -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">
+      👀 今日觀察（快速勾選）
+    </p>
+
+    <!-- Card: 任務進入狀況 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">任務進入狀況</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="sp-taskEntry"
+          onclick="selectSpecialedBtn('sp-taskEntry','smooth',this,'sel-green')">
+          <span class="text-lg leading-none">✅</span><span>順利</span>
+        </button>
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="sp-taskEntry"
+          onclick="selectSpecialedBtn('sp-taskEntry','remind',this,'sel-amber')">
+          <span class="text-lg leading-none">⚠️</span><span>需提醒</span>
+        </button>
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="sp-taskEntry"
+          onclick="selectSpecialedBtn('sp-taskEntry','hard',this,'sel-rose')">
+          <span class="text-lg leading-none">🔴</span><span>困難</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Card: 興趣度 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">興趣度</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="sp-interest"
+          onclick="selectSpecialedBtn('sp-interest','high',this,'sel-green')">
+          <span class="text-lg leading-none">🔥</span><span>高</span>
+        </button>
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="sp-interest"
+          onclick="selectSpecialedBtn('sp-interest','mid',this,'sel-amber')">
+          <span class="text-lg leading-none">😊</span><span>中</span>
+        </button>
+        <button class="btn-opt flex-1 h-13 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300
+                       flex flex-col items-center justify-center gap-0.5 py-2"
+          data-group="sp-interest"
+          onclick="selectSpecialedBtn('sp-interest','low',this,'sel-rose')">
+          <span class="text-lg leading-none">😐</span><span>低</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Support Box -->
+    <div id="specialed-support-box" class="support-box mb-3">
+      <div class="bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800
+                  rounded-2xl p-4">
+        <p class="text-sm font-bold text-orange-700 dark:text-orange-300 mb-3">💡 可以先試試 →</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-300
+                       border border-orange-200 dark:border-orange-700
+                       text-xs font-semibold px-3 py-1.5 rounded-full">先推牆 20 秒</span>
+          <span class="bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-300
+                       border border-orange-200 dark:border-orange-700
+                       text-xs font-semibold px-3 py-1.5 rounded-full">任務拆兩步</span>
+          <span class="bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-300
+                       border border-orange-200 dark:border-orange-700
+                       text-xs font-semibold px-3 py-1.5 rounded-full">先喝水再回座</span>
+          <span class="bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-300
+                       border border-orange-200 dark:border-orange-700
+                       text-xs font-semibold px-3 py-1.5 rounded-full">短暫離開再回來</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: 是否頻繁如廁 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">是否頻繁如廁</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="sp-toiletFreq"
+          onclick="selectSpecialedBtn('sp-toiletFreq','yes',this,'sel-blue')">有</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="sp-toiletFreq"
+          onclick="selectSpecialedBtn('sp-toiletFreq','no',this,'sel-blue')">無</button>
+      </div>
+    </div>
+
+    <!-- Card: 備註一句 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">備註一句（選填）</p>
+      <input type="text" id="specialed-note"
+        class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-3 text-sm focus:outline-none focus:border-blue-400 transition-colors"
+        placeholder="今天觀察到的一句話…" />
+    </div>
+
+    <!-- Section C: 特教專屬 -->
+    <div class="flex items-center gap-3 my-4">
+      <div class="flex-1 h-px bg-indigo-200 dark:bg-indigo-800"></div>
+      <span class="text-xs text-indigo-500 dark:text-indigo-400 font-semibold">🧩 特教專屬</span>
+      <div class="flex-1 h-px bg-indigo-200 dark:bg-indigo-800"></div>
+    </div>
+
+    <!-- Card: 今日支持焦點（多選）-->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">
+        今日支持焦點 <span class="font-normal text-slate-400">（可多選）</span>
+      </p>
+      <div class="grid grid-cols-2 gap-2">
+        <button class="btn-opt h-11 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="sp-focus"
+          onclick="toggleSpecialedFocus('startTask',this)">🚀 起始任務</button>
+        <button class="btn-opt h-11 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="sp-focus"
+          onclick="toggleSpecialedFocus('focus',this)">🎯 維持專注</button>
+        <button class="btn-opt h-11 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="sp-focus"
+          onclick="toggleSpecialedFocus('emotion',this)">💙 情緒穩定</button>
+        <button class="btn-opt h-11 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="sp-focus"
+          onclick="toggleSpecialedFocus('social',this)">🤝 人際互動</button>
+      </div>
+    </div>
+
+    <!-- Card: OT 任務執行 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">OT 任務執行</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="sp-otTask"
+          onclick="selectSpecialedBtn('sp-otTask','done',this,'sel-green')">有做 ✅</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="sp-otTask"
+          onclick="selectSpecialedBtn('sp-otTask','notDone',this,'sel-amber')">沒做</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-xs
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="sp-otTask"
+          onclick="selectSpecialedBtn('sp-otTask','notSuitable',this,'sel-rose')">今天不適合</button>
+      </div>
+    </div>
+
+    <!-- Card: 今日有效工具 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">今日有效工具（選填）</p>
+      <input type="text" id="specialed-effective-tool"
+        class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-3 text-sm focus:outline-none focus:border-blue-400 transition-colors"
+        placeholder="例：重力毯、推牆、計時器…" />
+    </div>
+
+    <!-- Card: 今日卡住點 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">今日卡住點（選填）</p>
+      <input type="text" id="specialed-stuck-point"
+        class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-3 text-sm focus:outline-none focus:border-blue-400 transition-colors"
+        placeholder="例：轉換情境時抗拒…" />
+    </div>
+
+    <!-- Section D: 課後欄 -->
+    <div class="flex items-center gap-3 my-4">
+      <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+      <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">課後欄 / 自由填寫</span>
+      <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+    </div>
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">課後回饋 / 自由欄</p>
+      <textarea id="specialed-free-note" rows="3"
+        class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-2 text-sm focus:outline-none focus:border-blue-400 resize-none"
+        placeholder="今天一句話…（也可空白送出）"></textarea>
+    </div>
+
+    <!-- Section E: 近 7 天 -->
+    <div class="flex items-center gap-3 mb-3">
+      <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+      <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">近 7 天</span>
+      <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+    </div>
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700
+                rounded-2xl px-4 py-3 mb-4">
+      <div class="flex items-center gap-2 mb-2">
+        <span style="display:inline-block;width:.75rem;height:.75rem;border-radius:9999px;background:#34d399"></span>
+        <span class="text-xs text-slate-400 dark:text-slate-500">順利</span>
+        <span style="display:inline-block;width:.75rem;height:.75rem;border-radius:9999px;background:#fbbf24"></span>
+        <span class="text-xs text-slate-400 dark:text-slate-500">需提醒</span>
+        <span style="display:inline-block;width:.75rem;height:.75rem;border-radius:9999px;background:#fb7185"></span>
+        <span class="text-xs text-slate-400 dark:text-slate-500">困難</span>
+        <span style="display:inline-block;width:.75rem;height:.75rem;border-radius:9999px;background:#e2e8f0"></span>
+        <span class="text-xs text-slate-400 dark:text-slate-500">未填</span>
+      </div>
+      <div id="specialed-week-row" class="flex gap-1 justify-between">
+        <!-- filled by buildWeekRow() -->
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button id="specialed-submit-btn" onclick="submitSpecialed()"
+      class="w-full h-14 rounded-2xl
+             bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800
+             dark:bg-indigo-500 dark:hover:bg-indigo-600
+             text-white text-base font-bold
+             transition-colors shadow-sm">
+      送出今日支持記錄
+    </button>
+
+  </div><!-- /page-specialed -->
+
+  <!-- ===== PAGE: AFTERSCHOOL ===== -->
+  <div id="page-afterschool" class="page pt-16 pb-12 px-4">
+
+    <!-- Weekday pickup rule banner -->
+    <div class="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-2xl p-3 mb-4 pt-2">
+      <p class="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-0.5">📅 今天的接送提示</p>
+      <p id="as-rule-text" class="text-sm text-blue-600 dark:text-blue-400">—</p>
+    </div>
+
+    <!-- Today's schedule highlight -->
+    <div id="as-schedule-card"
+      class="bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800
+             rounded-2xl p-3 mb-3">
+      <!-- filled by initAfterSchoolPage() -->
+    </div>
+
+    <!-- HERO: 可接時間（第一屏最大元素）-->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 mb-4">
+      <p class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">🕐 今天可接 Neo 的時間</p>
+      <p id="as-pickup-display"
+        class="text-5xl font-black text-blue-600 dark:text-blue-400 text-center py-3 tracking-tight">
+        ——
+      </p>
+      <div class="grid grid-cols-3 gap-2">
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-pickup"
+          onclick="selectAfterSchoolPickup('now','現在可接 🟢',this)">現在可接</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-pickup"
+          onclick="selectAfterSchoolPickup('10','10 分後',this)">10 分後</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-pickup"
+          onclick="selectAfterSchoolPickup('20','20 分後',this)">20 分後</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-pickup"
+          onclick="selectAfterSchoolPickup('30','30 分後',this)">30 分後</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-pickup"
+          onclick="selectAfterSchoolPickup('pending','還沒寫完',this)">還沒寫完</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-pickup"
+          onclick="selectAfterSchoolPickup('custom','自填',this)">自填時間</button>
+      </div>
+      <input type="time" id="as-pickup-custom"
+        class="hidden mt-2 w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-2 text-sm focus:outline-none"
+        onchange="updatePickupCustomTime(this.value)" />
+    </div>
+
+    <!-- Card: 作業完成度 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">作業完成度</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-hw" onclick="selectAfterSchoolBtn('as-hw','all',this,'sel-green')">全部 ✅</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-hw" onclick="selectAfterSchoolBtn('as-hw','most',this,'sel-green')">大部分</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-hw" onclick="selectAfterSchoolBtn('as-hw','half',this,'sel-amber')">一半</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-hw" onclick="selectAfterSchoolBtn('as-hw','none',this,'sel-rose')">未完成</button>
+      </div>
+    </div>
+
+    <!-- Card: 相對同儕 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">相對同儕速度</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-peer" onclick="selectAfterSchoolBtn('as-peer','fast',this,'sel-green')">快 🚀</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-peer" onclick="selectAfterSchoolBtn('as-peer','same',this,'sel-blue')">差不多</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-peer" onclick="selectAfterSchoolBtn('as-peer','slow',this,'sel-amber')">慢</button>
+      </div>
+    </div>
+
+    <!-- Card: 興趣度 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">今天的興趣度</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-interest" onclick="selectAfterSchoolBtn('as-interest','high',this,'sel-green')">高 🔥</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-interest" onclick="selectAfterSchoolBtn('as-interest','mid',this,'sel-amber')">中 😊</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-interest" onclick="selectAfterSchoolBtn('as-interest','low',this,'sel-rose')">低 😐</button>
+      </div>
+    </div>
+
+    <!-- Card: 中斷次數 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">中斷次數</p>
+      <div class="grid grid-cols-4 gap-2">
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-interrupt" onclick="selectAfterSchoolBtn('as-interrupt','0',this,'sel-green')">0 次</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-interrupt" onclick="selectAfterSchoolBtn('as-interrupt','1-2',this,'sel-amber')">1–2 次</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-interrupt" onclick="selectAfterSchoolBtn('as-interrupt','3-5',this,'sel-amber')">3–5 次</button>
+        <button class="btn-opt h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="as-interrupt" onclick="selectAfterSchoolBtn('as-interrupt','5+',this,'sel-rose')">5+ 次</button>
+      </div>
+    </div>
+
+    <!-- Card: 備註 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 tracking-wide">備註一句（選填）</p>
+      <input type="text" id="as-note"
+        class="w-full rounded-xl border border-slate-200 dark:border-slate-600
+               bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100
+               px-3 py-3 text-sm focus:outline-none focus:border-teal-400 transition-colors"
+        placeholder="例：今天很專心，有主動問問題" />
+    </div>
+
+    <!-- Submit -->
+    <button id="as-submit-btn" onclick="submitAfterSchool()"
+      class="w-full h-14 rounded-2xl
+             bg-teal-600 hover:bg-teal-700 active:bg-teal-800
+             dark:bg-teal-500 dark:hover:bg-teal-600
+             text-white text-base font-bold
+             transition-colors shadow-sm">
+      送出今日安親記錄
+    </button>
+
+  </div><!-- /page-afterschool -->
+
+  <!-- ===== PAGE: NEO ===== -->
+  <div id="page-neo" class="page pt-16 pb-12 px-4">
+
+    <!-- Heading -->
+    <div class="text-center pt-2 mb-4">
+      <p class="text-2xl font-black text-amber-500 dark:text-amber-400">今天的 Neo ⭐</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">選一下就好，不用寫很多</p>
+    </div>
+
+    <!-- Daily navigation map -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700
+                rounded-2xl p-4 mb-4">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">📋 今天的行程地圖</p>
+      <div id="neo-nav-zones"><!-- filled by initNeoPage() --></div>
+    </div>
+
+    <!-- Q1: 整體感覺 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 mb-3">
+      <p class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 text-center">我今天整體感覺</p>
+      <div class="flex justify-center gap-3">
+        <button class="neo-btn w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-700 flex flex-col items-center justify-center gap-1"
+          data-group="neo-mood" onclick="selectNeoBtn('neo-mood','good',this,'#fef08a','#eab308')">
+          <span class="text-4xl">😊</span>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">好</span>
+        </button>
+        <button class="neo-btn w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-700 flex flex-col items-center justify-center gap-1"
+          data-group="neo-mood" onclick="selectNeoBtn('neo-mood','ok',this,'#bfdbfe','#3b82f6')">
+          <span class="text-4xl">😐</span>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">普通</span>
+        </button>
+        <button class="neo-btn w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-700 flex flex-col items-center justify-center gap-1"
+          data-group="neo-mood" onclick="selectNeoBtn('neo-mood','hard',this,'#fecaca','#ef4444')">
+          <span class="text-4xl">😣</span>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">很難</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q2: 身體感覺 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 mb-3">
+      <p class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 text-center">我今天身體感覺</p>
+      <div class="flex justify-center gap-3">
+        <button class="neo-btn w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-700 flex flex-col items-center justify-center gap-1"
+          data-group="neo-body" onclick="selectNeoBtn('neo-body','light',this,'#bbf7d0','#22c55e')">
+          <span class="text-4xl">🪁</span>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">輕鬆</span>
+        </button>
+        <button class="neo-btn w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-700 flex flex-col items-center justify-center gap-1"
+          data-group="neo-body" onclick="selectNeoBtn('neo-body','mid',this,'#bfdbfe','#3b82f6')">
+          <span class="text-4xl">😑</span>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">有點重</span>
+        </button>
+        <button class="neo-btn w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-700 flex flex-col items-center justify-center gap-1"
+          data-group="neo-body" onclick="selectNeoBtn('neo-body','heavy',this,'#fecaca','#ef4444')">
+          <span class="text-4xl">🪨</span>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">很重</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q3: 興趣度 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 mb-3">
+      <p class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 text-center">我今天做事情有沒有興趣</p>
+      <div class="flex justify-center gap-3">
+        <button class="neo-btn w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-700 flex flex-col items-center justify-center gap-1"
+          data-group="neo-interest" onclick="selectNeoBtn('neo-interest','high',this,'#fef08a','#eab308')">
+          <span class="text-4xl">🔥</span>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">有！</span>
+        </button>
+        <button class="neo-btn w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-700 flex flex-col items-center justify-center gap-1"
+          data-group="neo-interest" onclick="selectNeoBtn('neo-interest','mid',this,'#bfdbfe','#3b82f6')">
+          <span class="text-4xl">😊</span>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">還好</span>
+        </button>
+        <button class="neo-btn w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-700 flex flex-col items-center justify-center gap-1"
+          data-group="neo-interest" onclick="selectNeoBtn('neo-interest','low',this,'#e2e8f0','#94a3b8')">
+          <span class="text-4xl">😶</span>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">沒有</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q4: 最難的是 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 mb-3">
+      <p class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 text-center">今天最難的是</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button class="neo-btn h-14 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="neo-hard" onclick="selectNeoBtn('neo-hard','start',this,'#fef08a','#eab308')">🚀 開始做</button>
+        <button class="neo-btn h-14 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="neo-hard" onclick="selectNeoBtn('neo-hard','keep',this,'#bfdbfe','#3b82f6')">⏳ 繼續做</button>
+        <button class="neo-btn h-14 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="neo-hard" onclick="selectNeoBtn('neo-hard','social',this,'#bbf7d0','#22c55e')">🤝 跟人相處</button>
+        <button class="neo-btn h-14 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="neo-hard" onclick="selectNeoBtn('neo-hard','self',this,'#fecaca','#ef4444')">🌀 控制自己</button>
+      </div>
+    </div>
+
+    <!-- 任務卡完成度 -->
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 tracking-wide">今天任務卡完成了嗎？</p>
+      <div class="flex gap-2">
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="neo-task" onclick="selectNeoTaskBtn('yes',this,'sel-green')">有 ✅</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="neo-task" onclick="selectNeoTaskBtn('part',this,'sel-amber')">一部分</button>
+        <button class="btn-opt flex-1 h-12 rounded-xl font-semibold text-sm
+                       bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          data-group="neo-task" onclick="selectNeoTaskBtn('no',this,'sel-rose')">沒有</button>
+      </div>
+    </div>
+
+    <!-- 家長今天怎麼看 -->
+    <div class="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-2">👨‍👩‍👧 家長今天怎麼說</p>
+      <div id="neo-parent-view">
+        <p class="text-sm text-amber-600 dark:text-amber-400">家長尚未填報今日資訊</p>
+      </div>
+    </div>
+
+    <!-- 差異提示（動態顯示）-->
+    <div id="neo-diff-card" class="hidden bg-slate-100 dark:bg-slate-800
+                                   border border-slate-200 dark:border-slate-700
+                                   rounded-2xl p-4 mb-3">
+      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">💬 小提示</p>
+      <p id="neo-diff-msg" class="text-sm text-slate-700 dark:text-slate-300"></p>
+    </div>
+
+    <!-- Submit -->
+    <button id="neo-submit-btn" onclick="submitNeo()"
+      class="w-full h-14 rounded-2xl mt-1
+             bg-gradient-to-r from-amber-400 to-orange-400
+             dark:from-amber-500 dark:to-orange-500
+             text-white text-base font-black
+             transition-all shadow-sm active:opacity-90">
+      完成！🎉
+    </button>
+
+  </div><!-- /page-neo -->
+
+  <!-- ===== PAGE: OVERVIEW ===== -->
+  <div id="page-overview" class="page pt-16 pb-12 px-4">
+
+    <!-- Title -->
+    <div class="text-center pt-2 mb-5">
+      <p class="text-lg font-bold text-slate-700 dark:text-slate-300">📊 今日 Neo 總覽</p>
+      <p id="ov-date" class="text-xs text-slate-400 dark:text-slate-500 mt-1"></p>
+    </div>
+
+    <!-- Section 1: 今日填報狀況 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">今日填報狀況</p>
+    <div id="ov-submitted-badges"
+      class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700
+             rounded-2xl p-4 mb-4 flex justify-between">
+      <!-- filled by initOverviewPage() -->
+    </div>
+
+    <!-- Section 2: 本週任務狀況 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">本週任務狀況</p>
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <div class="flex gap-2 text-xs text-slate-400 mb-2">
+        <span style="width:1rem"></span><span style="width:1rem"></span>
+        <span class="flex-1">
+          <span style="display:inline-block;width:.65rem;height:.65rem;border-radius:50%;background:#34d399;margin-right:.25rem"></span>順利
+          <span style="display:inline-block;width:.65rem;height:.65rem;border-radius:50%;background:#fbbf24;margin-left:.5rem;margin-right:.25rem"></span>需提醒
+          <span style="display:inline-block;width:.65rem;height:.65rem;border-radius:50%;background:#fb7185;margin-left:.5rem;margin-right:.25rem"></span>困難
+        </span>
+      </div>
+      <div id="ov-week-bars" class="space-y-2"><!-- filled by JS --></div>
+    </div>
+
+    <!-- Section 3: 用藥 vs 任務順利 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">用藥 vs 任務順利率</p>
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <div id="ov-med-focus" class="flex gap-3"><!-- filled by JS --></div>
+    </div>
+
+    <!-- Section 4: 興趣度 vs 作業完成度 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">興趣度 vs 作業完成度（近5天）</p>
+    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <div class="flex gap-2 text-xs text-slate-400 mb-2">
+        <span style="width:1rem"></span><span style="width:1rem"></span>
+        <span class="flex-1 text-center">興趣</span>
+        <span class="flex-1 text-center">作業</span>
+      </div>
+      <div id="ov-interest-hw" class="space-y-1.5"><!-- filled by JS --></div>
+    </div>
+
+    <!-- Section 5: Neo vs 家長差異卡 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">Neo 自填 vs 家長視角</p>
+    <div id="ov-diff-card"
+      class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <!-- filled by JS -->
+    </div>
+
+    <!-- Section 6: 家長一鍵回覆 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">家長回應</p>
+    <div id="ov-parent-reply"
+      class="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-2xl p-4 mb-4">
+      <!-- filled by JS -->
+    </div>
+
+    <!-- Section 7: AI 整合回饋 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">🤖 最近 AI 整合回饋</p>
+    <div id="ov-ai-feedback"
+      class="bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-2xl p-4 mb-4">
+      <!-- filled by JS -->
+    </div>
+
+    <!-- Section 8: 校外專家建議 -->
+    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-2">📋 最近校外專家建議</p>
+    <div id="ov-expert-suggestion"
+      class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <!-- filled by JS -->
+    </div>
+
+  </div><!-- /page-overview -->
+
+  <!-- ===== PAGE: SUCCESS ===== -->
+  <div id="page-success" class="page pt-16 pb-12 px-4 items-center justify-center min-h-screen">
+    <div class="text-center">
+      <div class="text-7xl mb-6" id="success-emoji">✅</div>
+      <p class="text-2xl font-black text-slate-700 dark:text-slate-200 mb-2" id="success-title">送出成功！</p>
+      <p class="text-sm text-slate-400 dark:text-slate-500 mb-8" id="success-subtitle">資料已記錄</p>
+      <button onclick="showPage('page-role')"
+        class="w-48 h-12 rounded-2xl bg-blue-600 dark:bg-blue-500 text-white font-bold text-sm transition-colors">
+        回主頁
+      </button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+<script src="assets/api.js"></script>
+<script>
+// ============================================================
+// CONSTANTS — preserve exactly
+// ============================================================
+const PASSWORD   = '30203';
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_URL  = 'YOUR_SHEET_JSON_URL_HERE';
+const VERSION    = 'v2.1';
+
+// Session valid for 24 hours (ms)
+const SESSION_TTL = 24 * 60 * 60 * 1000;
+
+// ============================================================
+// STATE
+// ============================================================
+let currentPage = null;
+let currentRole = null;
+
+// Role metadata for header
+const ROLE_META = {
+  parent:      { title: '家長', back: 'page-role' },
+  teacher:     { title: '導師', back: 'page-role' },
+  specialed:   { title: '特教老師', back: 'page-role' },
+  afterschool: { title: '安親班老師', back: 'page-role' },
+  neo:         { title: 'Neo', back: 'page-role' },
+  overview:    { title: '縱覽', back: 'page-role' },
+};
+
+// ============================================================
+// STORAGE HELPERS
+// ============================================================
+function saveToStorage(key, data) {
+  try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {}
+}
+
+function loadFromStorage(key) {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : null;
+  } catch(e) { return null; }
+}
+
+// ============================================================
+// DATE
+// ============================================================
+function getTodayString() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getTodayDisplay() {
+  return new Intl.DateTimeFormat('zh-TW', {
+    year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
+  }).format(new Date());
+}
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return '早安 ☀️';
+  if (h < 17) return '午安 🌤';
+  return '晚安 🌙';
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function applyTheme(theme) {
+  const html = document.documentElement;
+  if (theme === 'dark') {
+    html.classList.remove('light');
+    html.classList.add('dark');
+  } else {
+    html.classList.remove('dark');
+    html.classList.add('light');
+  }
+  // Update all theme icons
+  const icon = theme === 'dark' ? '🌙' : '☀️';
+  document.querySelectorAll('.theme-icon-display, #theme-icon').forEach(el => {
+    el.textContent = icon;
+  });
+  saveToStorage('neo-theme', theme);
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.classList.contains('dark');
+  applyTheme(isDark ? 'light' : 'dark');
+}
+
+function initTheme() {
+  const saved = loadFromStorage('neo-theme') || 'light';
+  applyTheme(saved);
+}
+
+// ============================================================
+// PAGE NAVIGATION
+// ============================================================
+function showPage(pageId, roleKey) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+  const target = document.getElementById(pageId);
+  if (!target) return;
+
+  // Show/hide global header
+  const header    = document.getElementById('app-header');
+  const isLogin   = pageId === 'page-login';
+  const isRole    = pageId === 'page-role';
+  header.classList.toggle('hidden', isLogin);
+  document.getElementById('header-back').classList.toggle('invisible', isRole);
+
+  // Update header content
+  if (!isLogin) {
+    document.getElementById('header-date').textContent = getTodayDisplay();
+    if (roleKey && ROLE_META[roleKey]) {
+      document.getElementById('header-title').textContent = ROLE_META[roleKey].title;
+      currentRole = roleKey;
+    } else if (isRole) {
+      document.getElementById('header-title').textContent = '';
+    }
+  }
+
+  // Update login page date
+  const loginDate = document.getElementById('login-date');
+  if (loginDate) loginDate.textContent = getTodayDisplay();
+
+  // Update role greeting
+  const roleGreeting = document.getElementById('role-greeting');
+  if (roleGreeting) roleGreeting.textContent = getGreeting();
+
+  // Trigger fade-in, then call page init if defined
+  requestAnimationFrame(() => {
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+    const initFn = PAGE_INITS[pageId];
+    if (initFn) initFn();
+  });
+
+  currentPage = pageId;
+}
+
+function goBack() {
+  if (!currentRole) { showPage('page-role'); return; }
+  const meta = ROLE_META[currentRole];
+  if (meta) {
+    currentRole = null;
+    showPage(meta.back);
+  } else {
+    showPage('page-role');
+  }
+}
+
+function goRole(roleKey) {
+  const pageMap = {
+    parent:      'page-parent',
+    teacher:     'page-teacher',
+    specialed:   'page-specialed',
+    afterschool: 'page-afterschool',
+    neo:         'page-neo',
+    overview:    'page-overview',
+  };
+  const page = pageMap[roleKey];
+  if (page) showPage(page, roleKey);
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+function handleLogin() {
+  const input = document.getElementById('login-password');
+  const err   = document.getElementById('login-error');
+
+  if (input.value === PASSWORD) {
+    err.classList.add('hidden');
+    saveToStorage('neo-auth', {
+      authenticated: true,
+      expiresAt: Date.now() + SESSION_TTL,
+    });
+    input.value = '';
+    showPage('page-role');
+  } else {
+    err.classList.remove('hidden');
+    input.classList.add('shake');
+    input.value = '';
+    setTimeout(() => input.classList.remove('shake'), 400);
+    input.focus();
+  }
+}
+
+function checkSession() {
+  const auth = loadFromStorage('neo-auth');
+  if (auth && auth.authenticated && auth.expiresAt > Date.now()) {
+    showPage('page-role');
+  } else {
+    showPage('page-login');
+  }
+}
+
+function logout() {
+  saveToStorage('neo-auth', null);
+  currentRole = null;
+  showPage('page-login');
+}
+
+// ============================================================
+// PAGE INITS MAP
+// ============================================================
+const PAGE_INITS = {
+  'page-parent':      initParentPage,
+  'page-teacher':     initTeacherPage,
+  'page-specialed':   initSpecialedPage,
+  'page-afterschool': initAfterSchoolPage,
+  'page-neo':         initNeoPage,
+  'page-overview':    initOverviewPage,
+};
+
+// ============================================================
+// PARENT PAGE
+// ============================================================
+const parentState = {
+  reporter: null,
+  reporterOther: '',
+  status: null,
+  medTaken: null,
+  regulated: null,
+  reminder: '',
+  sleep: null,
+  water: null,
+  food: null,
+  supplements: null,
+  regulationActions: '',
+  notes: '',
+  mode: 'quick',
+};
+
+function updateApiDot(status) {
+  const dot = document.getElementById('api-status-dot');
+  if (!dot) return;
+  dot.className = 'api-dot ' + status;
+}
+
+function initParentPage() {
+  Object.assign(parentState, {
+    reporter: null, reporterOther: '', status: null,
+    medTaken: null, regulated: null, reminder: '',
+    sleep: null, water: null, food: null,
+    supplements: null, regulationActions: '', notes: '',
+    expertSuggestion: '',
+    mode: 'quick',
+  });
+  document.querySelectorAll('#page-parent .btn-opt').forEach(b => {
+    b.classList.remove('sel-green', 'sel-amber', 'sel-rose', 'sel-blue');
+  });
+  ['parent-reminder', 'parent-reporter-other-input',
+   'parent-regulation-actions', 'parent-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const esEl = document.getElementById('parent-expert-suggestion');
+  if (esEl) esEl.value = '';
+  document.getElementById('parent-reporter-other-input').classList.add('hidden');
+  buildScheduleCard('parent-schedule-card');
+  setParentMode('quick');
+}
+
+function setParentMode(mode) {
+  parentState.mode = mode;
+  const fullSection = document.getElementById('parent-full-section');
+  const pillQuick   = document.getElementById('pill-quick');
+  const pillFull    = document.getElementById('pill-full');
+  if (mode === 'full') {
+    fullSection.classList.remove('hidden');
+    pillFull.classList.add('pill-active');
+    pillQuick.classList.remove('pill-active');
+  } else {
+    fullSection.classList.add('hidden');
+    pillQuick.classList.add('pill-active');
+    pillFull.classList.remove('pill-active');
+  }
+}
+
+function selectParentBtn(group, value, el, selClass) {
+  document.querySelectorAll(`#page-parent [data-group="${group}"]`).forEach(b => {
+    b.classList.remove('sel-green', 'sel-amber', 'sel-rose', 'sel-blue');
+  });
+  el.classList.add(selClass);
+  parentState[group] = value;
+  if (group === 'reporter') {
+    document.getElementById('parent-reporter-other-input')
+      .classList.toggle('hidden', value !== 'other');
+  }
+}
+
+function submitParent() {
+  if (!parentState.reporter)          { showToast('請選擇填報人'); return; }
+  if (!parentState.status)            { showToast('請選擇今天的起跑點'); return; }
+  if (parentState.medTaken === null)  { showToast('請選擇今天有無吃藥'); return; }
+  if (parentState.regulated === null) { showToast('請選擇今天有無做調節'); return; }
+
+  parentState.reminder = document.getElementById('parent-reminder').value.trim();
+  if (parentState.mode === 'full') {
+    parentState.regulationActions = document.getElementById('parent-regulation-actions').value.trim();
+    parentState.notes             = document.getElementById('parent-notes').value.trim();
+    parentState.expertSuggestion  = document.getElementById('parent-expert-suggestion').value.trim();
+  }
+  if (parentState.reporter === 'other') {
+    parentState.reporterOther = document.getElementById('parent-reporter-other-input').value.trim();
+  }
+
+  const data = {
+    date:      getTodayString(),
+    role:      'parent',
+    mode:      parentState.mode,
+    reporter:  parentState.reporter === 'other'
+                 ? (parentState.reporterOther || '其他')
+                 : parentState.reporter,
+    status:    parentState.status,
+    medTaken:  parentState.medTaken === 'yes',
+    regulated: parentState.regulated === 'yes',
+    reminder:  parentState.reminder,
+    ...(parentState.mode === 'full' && {
+      sleep:             parentState.sleep,
+      water:             parentState.water,
+      food:              parentState.food,
+      supplements:       parentState.supplements === 'yes',
+      regulationActions: parentState.regulationActions,
+      notes:             parentState.notes,
+      expertSuggestion:  parentState.expertSuggestion,
+    }),
+    timestamp: Date.now(),
+  };
+
+  saveToStorage(`neo-parentData-${getTodayString()}`, data);
+  if (window.NeoApi && NeoApi.isConfigured()) {
+    NeoApi.postRecord(data).then(function() {
+      updateApiDot('ok');
+    }).catch(function(err) {
+      console.warn('API 送出失敗，資料已存本機:', err.message);
+      updateApiDot('err');
+    });
+  }
+  showSubmitSuccess();
+}
+
+function showToast(msg) {
+  const old = document.getElementById('neo-toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.id = 'neo-toast';
+  t.textContent = msg;
+  t.style.cssText = [
+    'position:fixed', 'bottom:6rem', 'left:50%', 'transform:translateX(-50%)',
+    'z-index:9999', 'padding:.6rem 1.25rem', 'border-radius:9999px',
+    'font-size:.875rem', 'font-weight:600', 'pointer-events:none',
+    'white-space:nowrap', 'box-shadow:0 4px 12px rgba(0,0,0,.2)',
+    'transition:opacity 300ms',
+    document.documentElement.classList.contains('dark')
+      ? 'background:#e2e8f0;color:#0f172a'
+      : 'background:#1e293b;color:#fff',
+  ].join(';');
+  document.body.appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = '0';
+    setTimeout(() => t.remove(), 320);
+  }, 2000);
+}
+
+function showSubmitSuccess() {
+  const btn = document.getElementById('parent-submit-btn');
+  btn.textContent = '✅ 已送出！';
+  btn.disabled = true;
+  btn.style.backgroundColor = '#059669';
+  setTimeout(() => {
+    btn.textContent = '送出今日回報';
+    btn.disabled = false;
+    btn.style.backgroundColor = '';
+    showPage('page-role');
+  }, 1300);
+}
+
+// ============================================================
+// SHARED HELPERS (teacher + specialed)
+// ============================================================
+
+// Generic submit success (reusable by any role page)
+function showRoleSubmitSuccess(btnId) {
+  const btn = document.getElementById(btnId);
+  const orig = btn.textContent;
+  btn.textContent = '✅ 已送出！';
+  btn.disabled = true;
+  btn.style.backgroundColor = '#059669';
+  setTimeout(() => {
+    btn.textContent = orig;
+    btn.disabled = false;
+    btn.style.backgroundColor = '';
+    showPage('page-role');
+  }, 1300);
+}
+
+// Read today's parent data and render into a summary card
+function buildParentSummaryCard(containerId) {
+  const data = loadFromStorage(`neo-parentData-${getTodayString()}`);
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!data) {
+    el.innerHTML = `<p class="text-sm text-slate-400 dark:text-slate-500 text-center py-1">家長尚未填報今日資訊</p>`;
+    return;
+  }
+  const statusMap = { stable: '穩 🟢', ok: '普通 🟡', unstable: '波動 🔴' };
+  el.innerHTML = `
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-xs text-slate-500 dark:text-slate-400">填報：${data.reporter}</span>
+      <span class="text-xs font-bold px-2 py-0.5 rounded-full
+                   bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+        ${statusMap[data.status] || data.status}
+      </span>
+    </div>
+    <div class="flex gap-4 text-xs text-slate-500 dark:text-slate-400 mb-2">
+      <span>${data.medTaken ? '✅ 有吃' : '— 沒吃'}</span>
+      <span>${data.regulated ? '🌟 有調節' : '— 沒調節'}</span>
+    </div>
+    ${data.reminder
+      ? `<p class="text-sm text-slate-700 dark:text-slate-200 border-l-2 border-blue-400 pl-2">"${data.reminder}"</p>`
+      : '<p class="text-xs text-slate-400 dark:text-slate-500">（今日無提醒）</p>'}
+  `;
+}
+
+// Build 7-day mini dot row from localStorage
+function buildWeekRow(role, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const today = new Date();
+  const wdayLabel = ['日','一','二','三','四','五','六'];
+  const dotColors = { smooth:'#34d399', remind:'#fbbf24', hard:'#fb7185' };
+  let html = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const saved = loadFromStorage(`neo-${role}Data-${key}`);
+    const dotColor = saved ? (dotColors[saved.taskEntry] || '#60a5fa') : '#e2e8f0';
+    const ring = i === 0 ? ';outline:2px solid #3b82f6;outline-offset:2px' : '';
+    html += `
+      <div class="flex flex-col items-center gap-1 flex-1" style="opacity:${i===0?'1':'.65'}">
+        <span style="font-size:10px;color:#94a3b8">${wdayLabel[d.getDay()]}</span>
+        <div class="week-dot" style="background:${dotColor}${ring}"></div>
+        <span style="font-size:10px;color:#94a3b8">${d.getDate()}</span>
+      </div>`;
+  }
+  el.innerHTML = html;
+}
+
+// ============================================================
+// TEACHER PAGE
+// ============================================================
+const teacherState = {
+  taskEntry:  null,   // 'smooth'|'remind'|'hard'
+  interest:   null,   // 'high'|'mid'|'low'
+  toiletFreq: null,   // 'yes'|'no'
+  note:       '',
+  freeNote:   '',
+};
+
+function initTeacherPage() {
+  Object.assign(teacherState, {
+    taskEntry: null, interest: null, toiletFreq: null,
+    note: '', freeNote: '',
+  });
+  document.querySelectorAll('#page-teacher .btn-opt').forEach(b =>
+    b.classList.remove('sel-green','sel-amber','sel-rose','sel-blue'));
+  ['teacher-note','teacher-free-note'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('teacher-support-box').classList.remove('show');
+  buildParentSummaryCard('teacher-parent-summary');
+  buildScheduleCard('teacher-schedule-card');
+  buildWeekRow('teacher', 'teacher-week-row');
+}
+
+function selectTeacherBtn(group, value, el, selClass) {
+  document.querySelectorAll(`#page-teacher [data-group="${group}"]`).forEach(b =>
+    b.classList.remove('sel-green','sel-amber','sel-rose','sel-blue'));
+  el.classList.add(selClass);
+  teacherState[group] = value;
+  checkTeacherTriggers();
+}
+
+function checkTeacherTriggers() {
+  const show = teacherState.taskEntry === 'hard' || teacherState.interest === 'low';
+  document.getElementById('teacher-support-box').classList.toggle('show', show);
+}
+
+function submitTeacher() {
+  teacherState.note     = document.getElementById('teacher-note').value.trim();
+  teacherState.freeNote = document.getElementById('teacher-free-note').value.trim();
+  const data = {
+    date:       getTodayString(),
+    role:       'teacher',
+    taskEntry:  teacherState.taskEntry,
+    interest:   teacherState.interest,
+    toiletFreq: teacherState.toiletFreq,
+    note:       teacherState.note,
+    freeNote:   teacherState.freeNote,
+    timestamp:  Date.now(),
+  };
+  saveToStorage(`neo-teacherData-${getTodayString()}`, data);
+  if (window.NeoApi && NeoApi.isConfigured()) {
+    NeoApi.postRecord(data).then(function() {
+      updateApiDot('ok');
+    }).catch(function(err) {
+      console.warn('API 送出失敗，資料已存本機:', err.message);
+      updateApiDot('err');
+    });
+  }
+  showRoleSubmitSuccess('teacher-submit-btn');
+}
+
+// ============================================================
+// SPECIAL ED PAGE
+// ============================================================
+const specialedState = {
+  'sp-taskEntry':  null,
+  'sp-interest':   null,
+  'sp-toiletFreq': null,
+  'sp-otTask':     null,
+  note:            '',
+  freeNote:        '',
+  supportFocus:    [],    // multi-select array
+  effectiveTool:   '',
+  stuckPoint:      '',
+};
+
+function initSpecialedPage() {
+  Object.assign(specialedState, {
+    'sp-taskEntry': null, 'sp-interest': null, 'sp-toiletFreq': null,
+    'sp-otTask': null, note: '', freeNote: '',
+    supportFocus: [], effectiveTool: '', stuckPoint: '',
+  });
+  document.querySelectorAll('#page-specialed .btn-opt').forEach(b =>
+    b.classList.remove('sel-green','sel-amber','sel-rose','sel-blue'));
+  ['specialed-note','specialed-free-note',
+   'specialed-effective-tool','specialed-stuck-point'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('specialed-support-box').classList.remove('show');
+  buildParentSummaryCard('specialed-parent-summary');
+  buildScheduleCard('specialed-schedule-card');
+  buildWeekRow('specialed', 'specialed-week-row');
+}
+
+function selectSpecialedBtn(group, value, el, selClass) {
+  document.querySelectorAll(`#page-specialed [data-group="${group}"]`).forEach(b =>
+    b.classList.remove('sel-green','sel-amber','sel-rose','sel-blue'));
+  el.classList.add(selClass);
+  specialedState[group] = value;
+  if (group === 'sp-taskEntry' || group === 'sp-interest') checkSpecialedTriggers();
+}
+
+function toggleSpecialedFocus(value, el) {
+  // Multi-select: toggle this button independently
+  el.classList.toggle('sel-blue');
+  const idx = specialedState.supportFocus.indexOf(value);
+  if (idx === -1) specialedState.supportFocus.push(value);
+  else specialedState.supportFocus.splice(idx, 1);
+}
+
+function checkSpecialedTriggers() {
+  const show = specialedState['sp-taskEntry'] === 'hard'
+            || specialedState['sp-interest']   === 'low';
+  document.getElementById('specialed-support-box').classList.toggle('show', show);
+}
+
+function submitSpecialed() {
+  specialedState.note          = document.getElementById('specialed-note').value.trim();
+  specialedState.freeNote      = document.getElementById('specialed-free-note').value.trim();
+  specialedState.effectiveTool = document.getElementById('specialed-effective-tool').value.trim();
+  specialedState.stuckPoint    = document.getElementById('specialed-stuck-point').value.trim();
+  const data = {
+    date:          getTodayString(),
+    role:          'specialed',
+    taskEntry:     specialedState['sp-taskEntry'],
+    interest:      specialedState['sp-interest'],
+    toiletFreq:    specialedState['sp-toiletFreq'],
+    note:          specialedState.note,
+    freeNote:      specialedState.freeNote,
+    supportFocus:  specialedState.supportFocus,
+    otTask:        specialedState['sp-otTask'],
+    effectiveTool: specialedState.effectiveTool,
+    stuckPoint:    specialedState.stuckPoint,
+    timestamp:     Date.now(),
+  };
+  saveToStorage(`neo-specialedData-${getTodayString()}`, data);
+  if (window.NeoApi && NeoApi.isConfigured()) {
+    NeoApi.postRecord(data).then(function() {
+      updateApiDot('ok');
+    }).catch(function(err) {
+      console.warn('API 送出失敗，資料已存本機:', err.message);
+      updateApiDot('err');
+    });
+  }
+  showRoleSubmitSuccess('specialed-submit-btn');
+}
+
+// ============================================================
+// AFTERSCHOOL PAGE
+// ============================================================
+const PICKUP_RULES = {
+  0: '今天是假日',
+  1: '週一：17:50 前接，18:00 固定諮商',
+  2: '週二：18:00 後可接',
+  3: '週三：17:30 校門口接（安親班後回學校）',
+  4: '週四：18:00 後可接',
+  5: '週五：17:30 校門口接（安親班後回學校）',
+  6: '今天是假日',
+};
+
+// ============================================================
+// TODAY'S SCHEDULE & NEO NAVIGATION MAP (fake / placeholder data)
+// ============================================================
+const DAILY_SCHEDULE = {
+  0: { subjects:[], otDay:false, note:'今天是假日 🎉',
+       navZones:{
+         morning:    {icon:'🌅',label:'上午',  activity:'假日休息',   tool:'自由玩！'},
+         afternoon:  {icon:'☀️',label:'下午',  activity:'假日休息',   tool:'自由玩！'},
+         afterschool:{icon:'🌆',label:'傍晚',  activity:'在家',       tool:'任何你喜歡的'},
+         evening:    {icon:'🌙',label:'晚上',  activity:'睡前放鬆',   tool:'深呼吸 × 3'},
+       }},
+  1: { subjects:['數學','體育','國語','自然'], otDay:false, note:'週一：17:50 前接，18:00 固定諮商',
+       navZones:{
+         morning:    {icon:'🌅',label:'上午',  activity:'數學 + 國語',    tool:'先推牆 20 秒再坐下'},
+         afternoon:  {icon:'☀️',label:'下午',  activity:'體育 + 自然',    tool:'體育衣記得帶'},
+         afterschool:{icon:'📚',label:'安親',  activity:'寫作業',         tool:'計時器 15 分一段'},
+         evening:    {icon:'🌙',label:'晚上',  activity:'17:50 前接，諮商', tool:'深呼吸 × 3'},
+       }},
+  2: { subjects:['國語','英語','音樂','社會'], otDay:true,  note:'週二：OT 課，帶感覺工具袋',
+       navZones:{
+         morning:    {icon:'🌅',label:'上午',  activity:'國語 + 英語',    tool:'先喝水再開始'},
+         afternoon:  {icon:'☀️',label:'下午',  activity:'音樂 + OT 課',   tool:'OT 工具袋記得帶'},
+         afterschool:{icon:'📚',label:'安親',  activity:'寫作業',         tool:'一次一科，完成打勾'},
+         evening:    {icon:'🌙',label:'晚上',  activity:'18:00 後可接',   tool:'深呼吸 × 3'},
+       }},
+  3: { subjects:['社會','數學','藝文','閱讀'], otDay:false, note:'週三：安親後 17:30 校門口接',
+       navZones:{
+         morning:    {icon:'🌅',label:'上午',  activity:'數學 + 社會',    tool:'先推牆再寫數學'},
+         afternoon:  {icon:'☀️',label:'下午',  activity:'藝文 + 閱讀',    tool:'喜歡畫畫可以用彩色筆'},
+         afterschool:{icon:'📚',label:'安親',  activity:'安親後回學校',   tool:'17:30 校門口等爸媽'},
+         evening:    {icon:'🌙',label:'晚上',  activity:'回家放鬆',       tool:'深呼吸 × 3'},
+       }},
+  4: { subjects:['國語','數學','體育','健康'], otDay:false, note:'週四：18:00 後可接',
+       navZones:{
+         morning:    {icon:'🌅',label:'上午',  activity:'國語 + 數學',    tool:'計時器幫忙，15 分一段'},
+         afternoon:  {icon:'☀️',label:'下午',  activity:'體育 + 健康',    tool:'體育課跑步消耗能量'},
+         afterschool:{icon:'📚',label:'安親',  activity:'寫作業',         tool:'從最簡單的一題開始'},
+         evening:    {icon:'🌙',label:'晚上',  activity:'18:00 後可接',   tool:'深呼吸 × 3'},
+       }},
+  5: { subjects:['自然','英語','閱讀','數學'], otDay:false, note:'週五：安親後 17:30 校門口接',
+       navZones:{
+         morning:    {icon:'🌅',label:'上午',  activity:'自然 + 英語',    tool:'好奇心模式，問「為什麼？」'},
+         afternoon:  {icon:'☀️',label:'下午',  activity:'閱讀 + 數學',    tool:'閱讀完打勾，加 ⭐ 獎勵'},
+         afterschool:{icon:'📚',label:'安親',  activity:'安親後回學校',   tool:'17:30 校門口，週末快了 🎉'},
+         evening:    {icon:'🌙',label:'晚上',  activity:'回家放鬆',       tool:'明天放假 🎉'},
+       }},
+  6: { subjects:[], otDay:false, note:'今天是假日 🎉',
+       navZones:{
+         morning:    {icon:'🌅',label:'上午',  activity:'假日休息',   tool:'自由玩！'},
+         afternoon:  {icon:'☀️',label:'下午',  activity:'假日休息',   tool:'自由玩！'},
+         afterschool:{icon:'🌆',label:'傍晚',  activity:'在家',       tool:'任何你喜歡的'},
+         evening:    {icon:'🌙',label:'晚上',  activity:'睡前放鬆',   tool:'深呼吸 × 3'},
+       }},
+};
+
+function buildScheduleCard(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const day = new Date().getDay();
+  const sched = DAILY_SCHEDULE[day] || DAILY_SCHEDULE[0];
+  if (!sched.subjects.length) {
+    el.innerHTML = `<p class="text-sm text-teal-600 dark:text-teal-400 text-center py-0.5">今天是假日，不上課 🎉</p>`;
+    return;
+  }
+  const subjHtml = sched.subjects.map(s =>
+    `<span class="bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200
+                  text-xs font-semibold px-2.5 py-1 rounded-full
+                  border border-teal-200 dark:border-teal-700">${s}</span>`
+  ).join('');
+  const otBadge = sched.otDay
+    ? `<span class="bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300
+                    text-xs font-bold px-2.5 py-1 rounded-full
+                    border border-purple-200 dark:border-purple-700 ml-auto">⚙️ OT 課</span>`
+    : '';
+  el.innerHTML = `
+    <div class="flex items-center gap-2 mb-2">
+      <p class="text-xs font-semibold text-teal-700 dark:text-teal-300">📅 今日課程</p>
+      ${otBadge}
+    </div>
+    <div class="flex flex-wrap gap-1.5 mb-2">${subjHtml}</div>
+    ${sched.note ? `<p class="text-xs text-teal-600 dark:text-teal-400">📌 ${sched.note}</p>` : ''}
+  `;
+}
+
+function buildNeoNavCard(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const day = new Date().getDay();
+  const zones = (DAILY_SCHEDULE[day] || DAILY_SCHEDULE[0]).navZones;
+  const styles = [
+    { bg:'bg-amber-50 dark:bg-amber-950', text:'text-amber-700 dark:text-amber-300', sub:'text-amber-600 dark:text-amber-400' },
+    { bg:'bg-sky-50 dark:bg-sky-950',     text:'text-sky-700 dark:text-sky-300',     sub:'text-sky-600 dark:text-sky-400' },
+    { bg:'bg-teal-50 dark:bg-teal-950',   text:'text-teal-700 dark:text-teal-300',   sub:'text-teal-600 dark:text-teal-400' },
+    { bg:'bg-indigo-50 dark:bg-indigo-950',text:'text-indigo-700 dark:text-indigo-300',sub:'text-indigo-600 dark:text-indigo-400' },
+  ];
+  const keys = ['morning','afternoon','afterschool','evening'];
+  const html = keys.map((k, i) => {
+    const z = zones[k]; const s = styles[i];
+    return `<div class="${s.bg} rounded-xl p-3">
+      <p class="text-sm font-bold ${s.text} mb-0.5">${z.icon} ${z.label}</p>
+      <p class="text-xs ${s.sub} font-medium leading-snug">${z.activity}</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 leading-snug">🛠 ${z.tool}</p>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="grid grid-cols-2 gap-2">${html}</div>`;
+}
+
+const afterSchoolState = {
+  pickup:          null,   // 'now'|'10'|'20'|'30'|'pending'|'custom'
+  pickupLabel:     '——',
+  pickupCustomTime:'',
+  homework:        null,   // 'all'|'most'|'half'|'none'
+  peer:            null,   // 'fast'|'same'|'slow'
+  interest:        null,   // 'high'|'mid'|'low'
+  interrupt:       null,   // '0'|'1-2'|'3-5'|'5+'
+  note:            '',
+};
+
+function initAfterSchoolPage() {
+  Object.assign(afterSchoolState, {
+    pickup: null, pickupLabel: '——', pickupCustomTime: '',
+    homework: null, peer: null, interest: null, interrupt: null, note: '',
+  });
+  document.querySelectorAll('#page-afterschool .btn-opt').forEach(b =>
+    b.classList.remove('sel-green','sel-amber','sel-rose','sel-blue'));
+  const dispEl = document.getElementById('as-pickup-display');
+  if (dispEl) dispEl.textContent = '——';
+  const custEl = document.getElementById('as-pickup-custom');
+  if (custEl) { custEl.value = ''; custEl.classList.add('hidden'); }
+  const noteEl = document.getElementById('as-note');
+  if (noteEl) noteEl.value = '';
+  // Show weekday rule
+  const ruleEl = document.getElementById('as-rule-text');
+  if (ruleEl) ruleEl.textContent = PICKUP_RULES[new Date().getDay()] || '—';
+  buildScheduleCard('as-schedule-card');
+}
+
+function selectAfterSchoolPickup(code, label, el) {
+  document.querySelectorAll('#page-afterschool [data-group="as-pickup"]').forEach(b =>
+    b.classList.remove('sel-green','sel-amber','sel-rose','sel-blue'));
+  el.classList.add('sel-blue');
+  afterSchoolState.pickup = code;
+  afterSchoolState.pickupLabel = label;
+  document.getElementById('as-pickup-display').textContent = label;
+  document.getElementById('as-pickup-custom').classList.toggle('hidden', code !== 'custom');
+}
+
+function updatePickupCustomTime(val) {
+  afterSchoolState.pickupCustomTime = val;
+  afterSchoolState.pickupLabel = val;
+  document.getElementById('as-pickup-display').textContent = val;
+}
+
+function selectAfterSchoolBtn(group, value, el, selClass) {
+  document.querySelectorAll(`#page-afterschool [data-group="${group}"]`).forEach(b =>
+    b.classList.remove('sel-green','sel-amber','sel-rose','sel-blue'));
+  el.classList.add(selClass);
+  const key = group.replace('as-', '');
+  afterSchoolState[key] = value;
+}
+
+function submitAfterSchool() {
+  if (!afterSchoolState.pickup) { showToast('請選擇可接時間'); return; }
+  afterSchoolState.note = document.getElementById('as-note').value.trim();
+  const data = {
+    date:            getTodayString(),
+    role:            'afterschool',
+    pickup:          afterSchoolState.pickup,
+    pickupLabel:     afterSchoolState.pickupLabel,
+    pickupCustomTime:afterSchoolState.pickupCustomTime,
+    homework:        afterSchoolState.homework,
+    peer:            afterSchoolState.peer,
+    interest:        afterSchoolState.interest,
+    interrupt:       afterSchoolState.interrupt,
+    note:            afterSchoolState.note,
+    pickupRuleDefault: PICKUP_RULES[new Date().getDay()],
+    timestamp:       Date.now(),
+  };
+  saveToStorage(`neo-afterschoolData-${getTodayString()}`, data);
+  if (window.NeoApi && NeoApi.isConfigured()) {
+    NeoApi.postRecord(data).then(function() {
+      updateApiDot('ok');
+    }).catch(function(err) {
+      console.warn('API 送出失敗，資料已存本機:', err.message);
+      updateApiDot('err');
+    });
+  }
+  showRoleSubmitSuccess('as-submit-btn');
+}
+
+// ============================================================
+// NEO PAGE
+// ============================================================
+const NEO_GROUP_MAP = {
+  'neo-mood': 'mood', 'neo-body': 'body',
+  'neo-interest': 'interest', 'neo-hard': 'hardest',
+};
+
+const neoState = {
+  mood:     null,   // 'good'|'ok'|'hard'
+  body:     null,   // 'light'|'mid'|'heavy'
+  interest: null,   // 'high'|'mid'|'low'
+  hardest:  null,   // 'start'|'keep'|'social'|'self'
+  taskCard: null,   // 'yes'|'part'|'no'
+};
+
+function initNeoPage() {
+  Object.assign(neoState, { mood:null, body:null, interest:null, hardest:null, taskCard:null });
+  // Reset neo-btn inline styles
+  document.querySelectorAll('#page-neo .neo-btn').forEach(b => {
+    b.style.backgroundColor = '';
+    b.style.borderColor = 'transparent';
+  });
+  // Reset task card btn-opt
+  document.querySelectorAll('#page-neo .btn-opt').forEach(b =>
+    b.classList.remove('sel-green','sel-amber','sel-rose','sel-blue'));
+  // Hide diff card
+  const dc = document.getElementById('neo-diff-card');
+  if (dc) dc.classList.add('hidden');
+  // Build nav map + parent view
+  buildNeoNavCard('neo-nav-zones');
+  buildNeoParentView();
+}
+
+function selectNeoBtn(group, value, el, bgColor, borderColor) {
+  document.querySelectorAll(`#page-neo [data-group="${group}"]`).forEach(b => {
+    b.style.backgroundColor = '';
+    b.style.borderColor = 'transparent';
+  });
+  el.style.backgroundColor = bgColor;
+  el.style.borderColor = borderColor;
+  const key = NEO_GROUP_MAP[group] || group;
+  neoState[key] = value;
+  checkNeoDiff();
+}
+
+function selectNeoTaskBtn(value, el, selClass) {
+  document.querySelectorAll('#page-neo [data-group="neo-task"]').forEach(b =>
+    b.classList.remove('sel-green','sel-amber','sel-rose','sel-blue'));
+  el.classList.add(selClass);
+  neoState.taskCard = value;
+}
+
+function buildNeoParentView() {
+  const p = loadFromStorage(`neo-parentData-${getTodayString()}`);
+  const el = document.getElementById('neo-parent-view');
+  if (!el) return;
+  if (!p) {
+    el.innerHTML = '<p class="text-sm text-amber-600 dark:text-amber-400">家長尚未填報今日資訊</p>';
+    return;
+  }
+  const statusMap = { stable: '穩 🟢', ok: '普通 🟡', unstable: '波動 🔴' };
+  el.innerHTML = `
+    <p class="text-sm font-semibold text-amber-700 dark:text-amber-300 mb-1">
+      今天起跑點：${statusMap[p.status] || p.status}
+    </p>
+    ${p.reminder ? `<p class="text-xs text-amber-600 dark:text-amber-400">"${p.reminder}"</p>` : ''}
+  `;
+}
+
+function checkNeoDiff() {
+  const p = loadFromStorage(`neo-parentData-${getTodayString()}`);
+  const diffCard = document.getElementById('neo-diff-card');
+  const diffMsg  = document.getElementById('neo-diff-msg');
+  if (!p || !diffCard || !diffMsg) return;
+  let msg = '';
+  if (p.status === 'stable' && neoState.mood === 'hard')
+    msg = '你說今天有點難，爸媽早上覺得你狀態不錯——今晚可以一起聊聊 💬';
+  else if (p.status === 'unstable' && neoState.mood === 'good')
+    msg = '早上有點波動，但你說感覺還好——今天你恢復得很棒 ⭐';
+  if (msg) {
+    diffCard.classList.remove('hidden');
+    diffMsg.textContent = msg;
+  } else {
+    diffCard.classList.add('hidden');
+  }
+}
+
+function submitNeo() {
+  const data = {
+    date:     getTodayString(),
+    role:     'neo',
+    mood:     neoState.mood,
+    body:     neoState.body,
+    interest: neoState.interest,
+    hardest:  neoState.hardest,
+    taskCard: neoState.taskCard,
+    timestamp: Date.now(),
+  };
+  saveToStorage(`neo-neoData-${getTodayString()}`, data);
+  if (window.NeoApi && NeoApi.isConfigured()) {
+    NeoApi.postRecord(data).then(function() {
+      updateApiDot('ok');
+    }).catch(function(err) {
+      console.warn('API 送出失敗，資料已存本機:', err.message);
+      updateApiDot('err');
+    });
+  }
+  showRoleSubmitSuccess('neo-submit-btn');
+}
+
+// ============================================================
+// OVERVIEW PAGE
+// ============================================================
+function initOverviewPage() {
+  const dateEl = document.getElementById('ov-date');
+  if (dateEl) dateEl.textContent = getTodayDisplay();
+  buildSubmittedBadges();
+  buildMedVsFocus();
+  buildInterestVsHw();
+  buildOvDiffCard();
+  buildParentReply();
+  buildOvAiFeedback();
+  buildOvExpertSuggestion();
+  if (window.NeoApi && NeoApi.isConfigured()) {
+    NeoApi.getLast7Days().then(function(apiData) {
+      buildOvWeekBarsFromApi(apiData.records || []);
+    }).catch(function() {
+      buildOvWeekBars(); // fallback to localStorage
+    });
+  } else {
+    buildOvWeekBars();
+  }
+}
+
+function buildOvWeekBarsFromApi(records) {
+  const el = document.getElementById('ov-week-bars');
+  if (!el) return;
+  const today = new Date();
+  const wdayLabel = ['日','一','二','三','四','五','六'];
+  const colorMap = { smooth: '#34d399', remind: '#fbbf24', hard: '#fb7185' };
+  const pctMap   = { smooth: 100, remind: 60, hard: 25 };
+  const lblMap   = { smooth: '順利', remind: '需提醒', hard: '困難' };
+
+  // Build date→record lookup from API records
+  const byDate = {};
+  records.forEach(function(rec) {
+    if (rec.date) byDate[rec.date] = rec;
+  });
+
+  let html = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.getFullYear() + '-'
+      + String(d.getMonth()+1).padStart(2,'0') + '-'
+      + String(d.getDate()).padStart(2,'0');
+    const rec = byDate[key];
+    const te = rec && (rec.taskInitiation || rec.taskEntry);
+    const barColor = te ? (colorMap[te] || '#60a5fa') : '#e2e8f0';
+    const barPct   = te ? (pctMap[te]   || 50)        : 0;
+    const barLabel = te ? (lblMap[te]   || te)        : '未填';
+    const isToday  = i === 0;
+    html += `<div class="flex items-center gap-2">
+      <span class="text-xs w-4 text-slate-400 dark:text-slate-500">${wdayLabel[d.getDay()]}</span>
+      <span class="text-xs w-4 text-slate-400 dark:text-slate-500">${d.getDate()}</span>
+      <div class="flex-1 h-4 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div class="ov-bar-fill" style="width:${barPct}%;background:${barColor}"></div>
+      </div>
+      <span class="text-xs text-slate-400 dark:text-slate-500 w-11 text-right">${barLabel}</span>
+      <span class="text-xs font-bold text-blue-500 w-3">${isToday ? '今' : ''}</span>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+function buildOvAiFeedback() {
+  const el = document.getElementById('ov-ai-feedback');
+  if (!el) return;
+  // Read last 7 days of parent records and find the most recent AI feedback
+  const today = new Date();
+  let latestFeedback = null;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.getFullYear() + '-'
+      + String(d.getMonth()+1).padStart(2,'0') + '-'
+      + String(d.getDate()).padStart(2,'0');
+    const rec = loadFromStorage('neo-parentData-' + key);
+    if (rec && rec.aiSummary) {
+      latestFeedback = { text: rec.aiSummary, date: key };
+      break;
+    }
+  }
+  if (!latestFeedback) {
+    el.innerHTML = '<p class="text-xs text-slate-400 dark:text-slate-500">尚無 AI 回饋</p>';
+  } else {
+    el.innerHTML = `<p class="text-sm text-purple-700 dark:text-purple-300">${latestFeedback.text}</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">${latestFeedback.date}</p>`;
+  }
+}
+
+function buildOvExpertSuggestion() {
+  const el = document.getElementById('ov-expert-suggestion');
+  if (!el) return;
+  // Read last 7 days of parent records and find the most recent expert suggestion
+  const today = new Date();
+  let latestSuggestion = null;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.getFullYear() + '-'
+      + String(d.getMonth()+1).padStart(2,'0') + '-'
+      + String(d.getDate()).padStart(2,'0');
+    const rec = loadFromStorage('neo-parentData-' + key);
+    if (rec && rec.expertSuggestion) {
+      latestSuggestion = { text: rec.expertSuggestion, date: key };
+      break;
+    }
+  }
+  if (!latestSuggestion) {
+    el.innerHTML = '<p class="text-xs text-slate-400 dark:text-slate-500">尚無校外專家建議</p>';
+  } else {
+    el.innerHTML = `<p class="text-sm text-slate-700 dark:text-slate-300">${latestSuggestion.text}</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">${latestSuggestion.date}</p>`;
+  }
+}
+
+function buildSubmittedBadges() {
+  const today = getTodayString();
+  const roles = [
+    { key: 'parent',      label: '家長', emoji: '👨‍👩‍👧' },
+    { key: 'teacher',     label: '導師', emoji: '📋' },
+    { key: 'specialed',   label: '特教', emoji: '🧩' },
+    { key: 'afterschool', label: '安親', emoji: '🎒' },
+    { key: 'neo',         label: 'Neo',  emoji: '⭐' },
+  ];
+  const el = document.getElementById('ov-submitted-badges');
+  if (!el) return;
+  el.innerHTML = roles.map(r => {
+    const done = !!loadFromStorage(`neo-${r.key}Data-${today}`);
+    return `<div class="flex flex-col items-center gap-1 flex-1">
+      <span class="text-2xl">${r.emoji}</span>
+      <span class="text-xs text-slate-500 dark:text-slate-400">${r.label}</span>
+      <span class="text-base font-bold ${done ? 'text-emerald-500' : 'text-slate-300 dark:text-slate-600'}">
+        ${done ? '✓' : '—'}
+      </span>
+    </div>`;
+  }).join('');
+}
+
+function buildOvWeekBars() {
+  const el = document.getElementById('ov-week-bars');
+  if (!el) return;
+  const today = new Date();
+  const wdayLabel = ['日','一','二','三','四','五','六'];
+  const colorMap = { smooth: '#34d399', remind: '#fbbf24', hard: '#fb7185' };
+  const pctMap   = { smooth: 100, remind: 60, hard: 25 };
+  const lblMap   = { smooth: '順利', remind: '需提醒', hard: '困難' };
+  let html = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const saved = loadFromStorage(`neo-teacherData-${key}`);
+    const te = saved && saved.taskEntry;
+    const barColor = te ? (colorMap[te] || '#60a5fa') : '#e2e8f0';
+    const barPct   = te ? (pctMap[te]   || 50)        : 0;
+    const barLabel = te ? (lblMap[te]   || te)        : '未填';
+    const isToday  = i === 0;
+    html += `<div class="flex items-center gap-2">
+      <span class="text-xs w-4 text-slate-400 dark:text-slate-500">${wdayLabel[d.getDay()]}</span>
+      <span class="text-xs w-4 text-slate-400 dark:text-slate-500">${d.getDate()}</span>
+      <div class="flex-1 h-4 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div class="ov-bar-fill" style="width:${barPct}%;background:${barColor}"></div>
+      </div>
+      <span class="text-xs text-slate-400 dark:text-slate-500 w-11 text-right">${barLabel}</span>
+      <span class="text-xs font-bold text-blue-500 w-3">${isToday ? '今' : ''}</span>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+function buildMedVsFocus() {
+  const el = document.getElementById('ov-med-focus');
+  if (!el) return;
+  const today = new Date();
+  let medDays = 0, noMedDays = 0, medSmooth = 0, noMedSmooth = 0;
+  let medCount = 0, noMedCount = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const p = loadFromStorage(`neo-parentData-${key}`);
+    const t = loadFromStorage(`neo-teacherData-${key}`);
+    if (!p || !t) continue;
+    const smooth = t.taskEntry === 'smooth' ? 1 : t.taskEntry === 'remind' ? 0.5 : 0;
+    if (p.medTaken) { medDays++; medSmooth += smooth; medCount++; }
+    else            { noMedDays++; noMedSmooth += smooth; noMedCount++; }
+  }
+  const medPct   = medCount   > 0 ? Math.round(medSmooth / medCount * 100)   : null;
+  const noMedPct = noMedCount > 0 ? Math.round(noMedSmooth / noMedCount * 100) : null;
+  el.innerHTML = `
+    <div class="flex-1 text-center p-3 bg-blue-50 dark:bg-blue-950 rounded-xl">
+      <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-1">有吃（${medDays}天）</p>
+      <p class="text-3xl font-black text-blue-700 dark:text-blue-300">${medPct !== null ? medPct + '%' : '—'}</p>
+      <p class="text-xs text-blue-500 mt-0.5">順利率</p>
+    </div>
+    <div class="flex-1 text-center p-3 bg-slate-100 dark:bg-slate-700 rounded-xl">
+      <p class="text-xs text-slate-600 dark:text-slate-400 font-semibold mb-1">沒吃（${noMedDays}天）</p>
+      <p class="text-3xl font-black text-slate-700 dark:text-slate-300">${noMedPct !== null ? noMedPct + '%' : '—'}</p>
+      <p class="text-xs text-slate-500 mt-0.5">順利率</p>
+    </div>
+  `;
+}
+
+function buildInterestVsHw() {
+  const el = document.getElementById('ov-interest-hw');
+  if (!el) return;
+  const today = new Date();
+  const wdayLabel = ['日','一','二','三','四','五','六'];
+  const intColors = { high:'#34d399', mid:'#fbbf24', low:'#fb7185' };
+  const intPct    = { high: 100, mid: 60, low: 25 };
+  const hwColors  = { all:'#34d399', most:'#86efac', half:'#fbbf24', none:'#fb7185' };
+  const hwPct     = { all: 100, most: 75, half: 50, none: 15 };
+  let html = '', count = 0;
+  for (let i = 6; i >= 0 && count < 5; i--) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    if (d.getDay() === 0 || d.getDay() === 6) continue;
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const t = loadFromStorage(`neo-teacherData-${key}`);
+    const a = loadFromStorage(`neo-afterschoolData-${key}`);
+    const iColor = t && t.interest  ? (intColors[t.interest] || '#e2e8f0') : '#e2e8f0';
+    const iPct   = t && t.interest  ? (intPct[t.interest]   || 0)         : 0;
+    const hColor = a && a.homework  ? (hwColors[a.homework] || '#e2e8f0') : '#e2e8f0';
+    const hPct   = a && a.homework  ? (hwPct[a.homework]    || 0)         : 0;
+    html += `<div class="flex items-center gap-2">
+      <span class="text-xs w-4 text-slate-400">${wdayLabel[d.getDay()]}</span>
+      <span class="text-xs w-4 text-slate-400">${d.getDate()}</span>
+      <div class="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div class="ov-bar-fill" style="width:${iPct}%;background:${iColor}"></div>
+      </div>
+      <div class="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div class="ov-bar-fill" style="width:${hPct}%;background:${hColor}"></div>
+      </div>
+    </div>`;
+    count++;
+  }
+  el.innerHTML = html || '<p class="text-xs text-slate-400 text-center py-2">本週尚無資料</p>';
+}
+
+function buildOvDiffCard() {
+  const el = document.getElementById('ov-diff-card');
+  if (!el) return;
+  const today = getTodayString();
+  const p = loadFromStorage(`neo-parentData-${today}`);
+  const n = loadFromStorage(`neo-neoData-${today}`);
+  if (!p && !n) {
+    el.innerHTML = '<p class="text-sm text-slate-400 dark:text-slate-500 text-center py-2">家長與 Neo 今日尚未填報</p>';
+    return;
+  }
+  const statusMap = { stable:'穩 🟢', ok:'普通 🟡', unstable:'波動 🔴' };
+  const moodMap   = { good:'好 😊', ok:'普通 😐', hard:'很難 😣' };
+  let hint = '';
+  if (p && n) {
+    if (p.status === 'stable' && n.mood === 'hard')
+      hint = `<p class="text-xs text-slate-500 dark:text-slate-400 mt-3">💬 家長覺得今天穩，Neo 說有點難——可以今晚聊聊</p>`;
+    else if (p.status === 'unstable' && n.mood === 'good')
+      hint = `<p class="text-xs text-slate-500 dark:text-slate-400 mt-3">💬 早上有波動，但 Neo 說還好——今天可能有恢復</p>`;
+  }
+  el.innerHTML = `
+    <div class="grid grid-cols-2 gap-3">
+      <div class="bg-blue-50 dark:bg-blue-950 rounded-xl p-3">
+        <p class="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">家長看到的</p>
+        <p class="text-base font-bold text-blue-700 dark:text-blue-300">${p ? (statusMap[p.status] || '—') : '未填報'}</p>
+        ${p && p.reminder ? `<p class="text-xs text-blue-500 mt-1">"${p.reminder}"</p>` : ''}
+      </div>
+      <div class="bg-amber-50 dark:bg-amber-950 rounded-xl p-3">
+        <p class="text-xs font-semibold text-amber-600 dark:text-amber-400 mb-1">Neo 自己說</p>
+        <p class="text-base font-bold text-amber-700 dark:text-amber-300">${n ? (moodMap[n.mood] || '—') : '未填報'}</p>
+        ${n && n.hardest ? `<p class="text-xs text-amber-500 mt-1">最難：${n.hardest}</p>` : ''}
+      </div>
+    </div>
+    ${hint}
+  `;
+}
+
+function buildParentReply() {
+  const el = document.getElementById('ov-parent-reply');
+  if (!el) return;
+  const today = getTodayString();
+  const reply = loadFromStorage(`neo-parentReply-${today}`);
+  const t = loadFromStorage(`neo-teacherData-${today}`);
+  if (!t) {
+    el.innerHTML = '<p class="text-sm text-slate-400 dark:text-slate-500 text-center py-1">導師今日尚未填報</p>';
+    return;
+  }
+  if (reply && reply.text) {
+    const time = new Date(reply.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+    el.innerHTML = `
+      <p class="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2">✅ 家長已回覆</p>
+      <p class="text-sm text-blue-600 dark:text-blue-400 italic">"${reply.text}"</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">${time}</p>
+    `;
+  } else {
+    const note = t.note || t.freeNote || '（今日無備註）';
+    el.innerHTML = `
+      <p class="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2">老師今日備註</p>
+      <p class="text-sm text-blue-600 dark:text-blue-400 mb-3">"${note}"</p>
+      <button onclick="sendParentReply()"
+        class="w-full h-11 rounded-xl bg-blue-600 dark:bg-blue-500
+               text-white text-sm font-semibold transition-colors">
+        我們知道了，回家後再了解，謝謝提醒 👍
+      </button>
+    `;
+  }
+}
+
+function sendParentReply() {
+  const reply = { text: '我們知道了，回家後再了解，謝謝提醒', timestamp: Date.now() };
+  saveToStorage(`neo-parentReply-${getTodayString()}`, reply);
+  const data = {
+    date: getTodayString(),
+    role: 'parentReply',
+    parentResponseReceived: reply.text,
+    timestamp: Date.now(),
+  };
+  if (window.NeoApi && NeoApi.isConfigured()) {
+    NeoApi.postRecord(data).then(function() {
+      updateApiDot('ok');
+    }).catch(function(err) {
+      console.warn('API 送出失敗，資料已存本機:', err.message);
+      updateApiDot('err');
+    });
+  }
+  buildParentReply();
+  showToast('已送出回覆 ✅');
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  document.getElementById('login-version').textContent = VERSION;
+  checkSession();
+  // Ping API for connection status indicator
+  if (window.NeoApi && NeoApi.isConfigured()) {
+    NeoApi.ping().then(function() {
+      updateApiDot('ok');
+    }).catch(function() {
+      updateApiDot('err');
+    });
+  }
+});
+</script>
+</body>
+</html>

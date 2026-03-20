@@ -1,0 +1,162 @@
+/* ============================================================
+   Neo-nav — Custom stylesheet  v2.1
+   ============================================================ */
+
+/* ── Page fade transition ── */
+.page {
+  display: none;
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+.page.active {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+}
+
+/* ── Password / input shake animation ── */
+@keyframes shake {
+  0%,  100% { transform: translateX(0); }
+  20%, 60%  { transform: translateX(-7px); }
+  40%, 80%  { transform: translateX(7px); }
+}
+.shake { animation: shake 360ms ease; }
+
+/* ── Role card hover lift ── */
+.role-card {
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.role-card:active {
+  transform: scale(0.97);
+}
+
+/* ── Theme toggle button ── */
+#theme-toggle {
+  transition: opacity 150ms;
+}
+#theme-toggle:active { opacity: 0.6; }
+
+/* ── Button option selection states ── */
+.btn-opt { transition: all 150ms ease; }
+.btn-opt.sel-green { background-color:#d1fae5; color:#065f46; outline:2px solid #34d399; outline-offset:2px; }
+.btn-opt.sel-amber { background-color:#fef3c7; color:#78350f; outline:2px solid #fbbf24; outline-offset:2px; }
+.btn-opt.sel-rose  { background-color:#ffe4e6; color:#9f1239; outline:2px solid #fb7185; outline-offset:2px; }
+.btn-opt.sel-blue  { background-color:#2563eb; color:#ffffff; outline:2px solid #93c5fd; outline-offset:2px; }
+
+/* Dark mode variants */
+.dark .btn-opt.sel-green { background-color:#064e3b; color:#a7f3d0; outline-color:#10b981; }
+.dark .btn-opt.sel-amber { background-color:#78350f; color:#fde68a; outline-color:#f59e0b; }
+.dark .btn-opt.sel-rose  { background-color:#881337; color:#fecdd3; outline-color:#f43f5e; }
+.dark .btn-opt.sel-blue  { background-color:#1d4ed8; color:#ffffff; outline-color:#93c5fd; }
+
+/* ── Mode pill toggle ── */
+.pill-btn { color:#64748b; transition:all 150ms; }
+.dark .pill-btn { color:#94a3b8; }
+.pill-btn.pill-active {
+  background-color:#ffffff;
+  color:#1e293b;
+  box-shadow:0 1px 3px rgba(0,0,0,.15);
+  border-radius:9999px;
+}
+.dark .pill-btn.pill-active {
+  background-color:#334155;
+  color:#f1f5f9;
+}
+
+/* ── Support box slide animation ── */
+.support-box {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 350ms ease, opacity 300ms ease;
+}
+.support-box.show {
+  max-height: 600px;
+  opacity: 1;
+}
+
+/* ── Week row dot ── */
+.week-dot {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Neo self-report: large emoji buttons ── */
+.neo-btn {
+  transition: all 180ms ease;
+  border-width: 2px;
+  border-style: solid;
+  border-color: transparent;
+}
+.neo-btn:active { transform: scale(0.91); }
+
+/* ── Overview bar ── */
+.ov-bar-fill {
+  transition: width 600ms ease;
+  height: 100%;
+  border-radius: 9999px;
+}
+
+/* ── API status indicator dot ── */
+.api-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.api-dot.ok  { background: #34d399; }
+.api-dot.err { background: #fb7185; }
+.api-dot.off { background: #94a3b8; }
+
+/* ── Neo nav zone card helper ── */
+.neo-nav-zone {
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+/* ── Pickup time hero display ── */
+.pickup-hero {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* ── Signature placeholder area ── */
+.sig-placeholder {
+  border: 2px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  color: #94a3b8;
+  font-size: 1.5rem;
+}
+.dark .sig-placeholder {
+  border-color: #475569;
+  color: #64748b;
+}
+
+/* ── Weekly pickup rule row highlight ── */
+.pickup-rule-row {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: background 150ms;
+}
+.pickup-rule-row.today-rule {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+.dark .pickup-rule-row.today-rule {
+  background-color: #1e3a5f;
+  color: #93c5fd;
+}
